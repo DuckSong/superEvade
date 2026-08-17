@@ -38,6 +38,42 @@ local TableInsert, TableRemove, TableSort = table.insert, table.remove, table.so
 require "2DGeometry"
 pcall(function() require "DamageLib" end)
 require 'MapPositionGOS'
+local LOG_FILE = (SCRIPT_PATH or "") .. "superEvade.log"
+local _logIniciado = false
+local function EscreverLinha(texto)
+	pcall(function()
+		if not _logIniciado then
+			_logIniciado = true
+			local h = io.open(LOG_FILE, "w")
+			if h then
+				h:write(string.format("=== superEvade | session started | map %s ===\n",
+					tostring(Game.mapName or Game.mapID)))
+				h:close()
+			end
+		end
+		local f = io.open(LOG_FILE, "a")
+		if not f then return end
+		f:write(texto)
+		f:close()
+	end)
+end
+local _printOriginal = print
+local _dentro = false
+print = function(...)
+	_printOriginal(...)
+	if _dentro then return end
+	_dentro = true
+	local partes = {}
+	for i = 1, select("#", ...) do
+		partes[#partes + 1] = tostring((select(i, ...)))
+	end
+	local linha = table.concat(partes, "\t")
+	pcall(function()
+		EscreverLinha(string.format("[%7.1f] CONSOLE: %s\n",
+			(Game and Game.Timer and Game.Timer()) or 0, linha))
+	end)
+	_dentro = false
+end
 local DETECTED_MAP_ID = Game.mapID
 local DETECTED_MAP_NAME = (Game.mapName and tostring(Game.mapName)) or ""
 print("[superEvade] Detected mapID:", DETECTED_MAP_ID)
@@ -2383,42 +2419,6 @@ local CleansableCC = {
 	[34] = "Drowsy",     [35] = "Asleep",
 }
 local CleansableSlow = { [11] = "Slow", [19] = "AttackSpeedSlow" }
-local LOG_FILE = (SCRIPT_PATH or "") .. "superEvade.log"
-local _logIniciado = false
-local function EscreverLinha(texto)
-	pcall(function()
-		if not _logIniciado then
-			_logIniciado = true
-			local h = io.open(LOG_FILE, "w")
-			if h then
-				h:write(string.format("=== superEvade | session started | map %s ===\n",
-					tostring(Game.mapName or Game.mapID)))
-				h:close()
-			end
-		end
-		local f = io.open(LOG_FILE, "a")
-		if not f then return end
-		f:write(texto)
-		f:close()
-	end)
-end
-local _printOriginal = print
-local _dentro = false
-print = function(...)
-	_printOriginal(...)
-	if _dentro then return end
-	_dentro = true
-	local partes = {}
-	for i = 1, select("#", ...) do
-		partes[#partes + 1] = tostring((select(i, ...)))
-	end
-	local linha = table.concat(partes, "\t")
-	pcall(function()
-		EscreverLinha(string.format("[%7.1f] CONSOLE: %s\n",
-			(Game and Game.Timer and Game.Timer()) or 0, linha))
-	end)
-	_dentro = false
-end
 function DEvade:Log(msg)
 	if tostring(msg):sub(1, 5) == "ERROR" then print("[superEvade] " .. tostring(msg)) return end
 	if self.JEMenu.Debug.Console and self.JEMenu.Debug.Console:Value() then
@@ -7827,20 +7827,20 @@ function DEvade:CoreManager(s)
 					.. "still forbidden ground, but the orbwalker keeps the movement",
 					tostring(s.name), MathFloor(borda), MathFloor(self.MargemSeguranca or 0)))
 			end
-			return
+			return 0
 		end
 	end
 	if s and s.casterTeam == myHero.team
 		and self:SelfTestOn()
 		and self.JEMenu.Debug.SelfMove and not self.JEMenu.Debug.SelfMove:Value() then
-		return
+		return 0
 	end
 	local inutil = self:DesviarNaoResolve(s)
 	if inutil then
 		self:LogComIntervalo("inutil:" .. tostring(inutil), 3, string.format(
 			"NOT DODGING: %s | %s -- moving would cost position for nothing",
 			tostring(s and s.name), inutil))
-		return
+		return 0
 	end
 	if self:PodeAtravessar(s) then return 0 end
 	if self:NaSombra(s, self.MyHeroPos) then return 0 end
@@ -8342,7 +8342,7 @@ function DEvade:CoreManager(s)
 							MathFloor(self:Distance(self.MyHeroPos, safePos)),
 							MathFloor(depois), MathFloor(antes), MathFloor(self._alcanceCombo)))
 					end
-					return
+					return 0
 				end
 			end
 			if s._soDeGraca and safePos and self.EmCombo then
@@ -8365,7 +8365,7 @@ function DEvade:CoreManager(s)
 								.. "%.2fs and %.2fs remain -- the attack lands first",
 								tostring(s.name), quanto, custo, restante))
 						end
-						return
+						return 0
 					end
 				end
 			end
