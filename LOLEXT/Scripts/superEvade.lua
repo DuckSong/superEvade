@@ -1,17 +1,27 @@
 local superEvadeVersion = "0.4.2"
+local function MaisNova(a, b)
+	local pa, pb = {}, {}
+	for n in tostring(a):gmatch("%d+") do pa[#pa + 1] = tonumber(n) end
+	for n in tostring(b):gmatch("%d+") do pb[#pb + 1] = tonumber(n) end
+	for i = 1, math.max(#pa, #pb) do
+		local x, y = pa[i] or 0, pb[i] or 0
+		if x ~= y then return x > y end
+	end
+	return false
+end
 local OFF = { Value = function() return false end }
 local ON = { Value = function() return true end }
 do
 	local repo = "https://raw.githubusercontent.com/DuckSong/superEvade/main"
 	local ok = pcall(function()
-		local localFile = SCRIPT_PATH .. "superEvade.version"
+		local localFile = SCRIPT_PATH .. "superEvade.version.remote"
 		DownloadFileAsync(repo .. "/superEvade.version", localFile, function()
 			local h = io.open(localFile, "r")
 			if not h then return end
 			local remote = (h:read("*l") or ""):gsub("%s+", "")
 			h:close()
-			if remote ~= "" and remote ~= superEvadeVersion then
-				DownloadFileAsync(repo .. "/LOLEXT/Scripts/superEvade.lua",
+			if remote ~= "" and MaisNova(remote, superEvadeVersion) then
+			DownloadFileAsync(repo .. "/LOLEXT/Scripts/superEvade.lua",
 					SCRIPT_PATH .. "superEvade.lua", function()
 						print("superEvade updated to " .. remote .. " -- press F6 twice to reload")
 					end)
@@ -2374,15 +2384,11 @@ local CleansableCC = {
 }
 local CleansableSlow = { [11] = "Slow", [19] = "AttackSpeedSlow" }
 local LOG_FILE = (SCRIPT_PATH or "") .. "superEvade.log"
-function DEvade:Log(msg)
-	if tostring(msg):sub(1, 5) == "ERROR" then print("[superEvade] " .. tostring(msg)) return end
-	if self.JEMenu.Debug.Console and self.JEMenu.Debug.Console:Value() then
-		print("[superEvade] " .. tostring(msg))
-	end
-	if not (self.JEMenu.Debug.FileLog and self.JEMenu.Debug.FileLog:Value()) then return end
+local _logIniciado = false
+local function EscreverLinha(texto)
 	pcall(function()
-		if not self._logIniciado then
-			self._logIniciado = true
+		if not _logIniciado then
+			_logIniciado = true
 			local h = io.open(LOG_FILE, "w")
 			if h then
 				h:write(string.format("=== superEvade | session started | map %s ===\n",
@@ -2392,9 +2398,34 @@ function DEvade:Log(msg)
 		end
 		local f = io.open(LOG_FILE, "a")
 		if not f then return end
-		f:write(string.format("[%7.1f] %s\n", GameTimer(), tostring(msg)))
+		f:write(texto)
 		f:close()
 	end)
+end
+local _printOriginal = print
+local _dentro = false
+print = function(...)
+	_printOriginal(...)
+	if _dentro then return end
+	_dentro = true
+	local partes = {}
+	for i = 1, select("#", ...) do
+		partes[#partes + 1] = tostring((select(i, ...)))
+	end
+	local linha = table.concat(partes, "\t")
+	pcall(function()
+		EscreverLinha(string.format("[%7.1f] CONSOLE: %s\n",
+			(Game and Game.Timer and Game.Timer()) or 0, linha))
+	end)
+	_dentro = false
+end
+function DEvade:Log(msg)
+	if tostring(msg):sub(1, 5) == "ERROR" then print("[superEvade] " .. tostring(msg)) return end
+	if self.JEMenu.Debug.Console and self.JEMenu.Debug.Console:Value() then
+		print("[superEvade] " .. tostring(msg))
+	end
+	if not (self.JEMenu.Debug.FileLog and self.JEMenu.Debug.FileLog:Value()) then return end
+	EscreverLinha(string.format("[%7.1f] %s\n", GameTimer(), tostring(msg)))
 end
 function DEvade:HoldInsideRing()
 	if not (self.JEMenu.Position.HoldRing and self.JEMenu.Position.HoldRing:Value()) then return end
