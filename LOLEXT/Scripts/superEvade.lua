@@ -76,8 +76,6 @@ print = function(...)
 end
 local DETECTED_MAP_ID = Game.mapID
 local DETECTED_MAP_NAME = (Game.mapName and tostring(Game.mapName)) or ""
-print("[superEvade] Detected mapID:", DETECTED_MAP_ID)
-print("[superEvade] mapName:", DETECTED_MAP_NAME)
 local function _resolveMapType()
 	local mt = (MapPosition and MapPosition.GetMapType and MapPosition:GetMapType()) or (_G.MapType) or "unknown"
 	if mt == "unknown" then
