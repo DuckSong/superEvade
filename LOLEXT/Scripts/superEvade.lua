@@ -1,4 +1,4 @@
-local superEvadeVersion = "0.4.2"
+local superEvadeVersion = "0.4.3"
 local function MaisNova(a, b)
 	local pa, pb = {}, {}
 	for n in tostring(a):gmatch("%d+") do pa[#pa + 1] = tonumber(n) end
@@ -40,6 +40,18 @@ pcall(function() require "DamageLib" end)
 require 'MapPositionGOS'
 local LOG_FILE = (SCRIPT_PATH or "") .. "superEvade.log"
 local _logIniciado = false
+local _logLote, _logLoteN = {}, 0
+local function DespejarLog()
+	if _logLoteN == 0 then return end
+	local texto = table.concat(_logLote)
+	_logLote, _logLoteN = {}, 0
+	pcall(function()
+		local f = io.open(LOG_FILE, "a")
+		if not f then return end
+		f:write(texto)
+		f:close()
+	end)
+end
 local function EscreverLinha(texto)
 	pcall(function()
 		if not _logIniciado then
@@ -51,10 +63,9 @@ local function EscreverLinha(texto)
 				h:close()
 			end
 		end
-		local f = io.open(LOG_FILE, "a")
-		if not f then return end
-		f:write(texto)
-		f:close()
+		_logLoteN = _logLoteN + 1
+		_logLote[_logLoteN] = texto
+		if _logLoteN >= 64 then DespejarLog() end
 	end)
 end
 local _printOriginal = print
@@ -288,38 +299,43 @@ local SpellDatabase = {
 	},
 	["Graves"] = {
 		["GravesQLineSpell"] = { displayName = "End of the Line", slot = _Q, type = "polygon", speed = MathHuge, range = 800, delay = 0.25, extraEndTime = 1.3, radius = 20, danger = 1, cc = false, collision = false, windwall = true, hitbox = true, fow = false, exception = false, extend = true},
-		["GravesSmokeGrenade"] = { displayName = "Smoke Grenade", missileName = "GravesSmokeGrenadeBoom", slot = _W, type = "circular", speed = 1500, range = 950, delay = 0.15, radius = 250, danger = 2, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+		["GravesQReturn"] = { displayName = "End of the Line [estilhaco de volta]", missileName = "GravesQReturn", slot = _Q, type = "linear", speed = 1600, range = 925, delay = 0, radius = 100, substitui = "GravesQLineSpell", danger = 2, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = false},
+		["GravesSmokeGrenade"] = { displayName = "Smoke Grenade", missileName = "GravesSmokeGrenadeBoom", slot = _W, type = "circular", speed = 1650, range = 950, delay = 0.15, extraEndTime = 4.0, radius = 250, poca = true, danger = 2, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
 		["GravesChargeShot"] = { displayName = "Charge Shot", missileName = "GravesChargeShotShot", slot = _R, type = "polygon", speed = 2100, range = 1000, delay = 0.25, radius = 100, danger = 5, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 	},
 	["Gwen"] = {
-	["GwenQ"] = { displayName = "Snip Snip!", missileName = "GwenQ", slot = _Q, type = "circular", speed = 1500, range = 450, delay = 0, radius = 275, danger = 2, cc = false, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = true},
-	["GwenR"] = { displayName = "Needlework", missileName = "GwenR", slot = _R, type = "linear", speed = 1800, range = 1230, delay = 0.25, radius = 250, danger = 3, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = true},
+	["GwenQ"] = { displayName = "Snip Snip!", slot = _Q, type = "conic", speed = MathHuge, velocidadeFixa = true, range = 450, delay = 0, extraEndTime = 0.45, radius = 0, angle = 70, danger = 2, cc = false, collision = false, windwall = true, hitbox = false, fow = false, exception = false, extend = true},
+	["GwenR"] = { displayName = "Needlework", missileName = "GwenRMis", slot = _R, type = "linear", speed = 1800, velocidadeFixa = true, range = 1180, delay = 0.25, radius = 120, danger = 3, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = true},
 	},
 	["Hecarim"] = {
 		["HecarimRapidSlash"] = { displayName = "Rampage", slot = _Q, type = "linear", speed = MathHuge, range = 350, delay = 0.25, radius = 90, danger = 2, cc = false, collision = false, windwall = false, hitbox = true, fow = false, exception = false, extend = true},
 		["HecarimW"] = { displayName = "Spirit of Dread", slot = _W, type = "circular", speed = MathHuge, range = 0, delay = 0.25, radius = 425, danger = 2, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
 		["HecarimRamp"] = { displayName = "Devastating Charge", slot = _E, type = "linear", speed = MathHuge, range = 700, delay = 0, radius = 90, danger = 2, cc = true, collision = true, windwall = false, hitbox = true, fow = false, exception = false, extend = true},
-		["HecarimUlt"] = { displayName = "Onslaught of Shadows", missileName = "HecarimUlt", slot = _R, type = "linear", speed = 1100, range = 1650, delay = 0.2, radius = 280, danger = 4, cc = true, collision = false, windwall = false, hitbox = false, fow = true, exception = false, extend = true},
+		["HecarimUlt"] = { displayName = "Onslaught of Shadows", missileName = "HecarimUlt", slot = _R, type = "linear", speed = 1100, range = 1245, delay = 0.2, radius = 280, origemNoCaster = true, danger = 4, cc = true, collision = false, windwall = false, hitbox = false, fow = true, exception = false, extend = true},
 	},
 	["Heimerdinger"] = {
 		["HeimerdingerQ"] = { displayName = "H-28 G Evolution Turret", slot = _Q, type = "circular", speed = MathHuge, range = 900, delay = 0, radius = 80, danger = 1, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
-		["HeimerdingerW"] = { displayName = "Hextech Micro-Rockets", missileName = "HeimerdingerW", slot = _W, type = "linear", speed = 2050, range = 1325, delay = 0.25, radius = 100, danger = 2, cc = false, collision = false, windwall = true, hitbox = true, fow = false, exception = false, extend = true},
-		["HeimerdingerR"] = { displayName = "UPGRADE!!!", slot = _R, type = "circular", speed = MathHuge, range = 1000, delay = 0, radius = 180, danger = 3, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
-		["HeimerdingerE"] = { displayName = "CH-2 Electron Storm Grenade", missileName = "HeimerdingerESpell", slot = _E, type = "circular", speed = 1200, range = 970, delay = 0.25, radius = 250, danger = 2, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
-		["HeimerdingerEUlt"] = { displayName = "CH-2 Electron Storm Grenade [Ult]", missileName = "HeimerdingerESpell_ult", slot = _E, type = "circular", speed = 1200, range = 970, delay = 0.25, radius = 250, danger = 3, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+		["HeimerdingerWFoguete"] = { displayName = "Hextech Micro-Rockets [foguete]", missileName = "HeimerdingerWAttack2", slot = _W, type = "linear", speed = 2050, velocidadeFixa = true, range = 1325, delay = 0, radius = 100, multiMissile = true, danger = 2, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = true, extend = true},
+		["HeimerdingerWUltFoguete"] = { displayName = "Hextech Micro-Rockets [Ult, foguete]", missileName = "HeimerdingerWAttack2Ult", slot = _W, type = "linear", speed = 2050, velocidadeFixa = true, range = 1325, delay = 0, radius = 100, multiMissile = true, danger = 3, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = true, extend = true},
+		["HeimerdingerE"] = { displayName = "CH-2 Electron Storm Grenade", missileName = "HeimerdingerESpell", slot = _E, type = "circular", speed = 2500, velocidadeFixa = true, range = 970, delay = 0.25, extraEndTime = 0.4, radius = 250, danger = 2, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+		["HeimerdingerEUlt"] = { displayName = "CH-2 Electron Storm Grenade [Ult]", missileName = "HeimerdingerESpell_ult", slot = _E, type = "circular", speed = 2500, velocidadeFixa = true, range = 970, delay = 0.25, extraEndTime = 0.4, radius = 250, danger = 3, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+		["HeimerdingerEUlt2"] = { displayName = "CH-2 Electron Storm Grenade [Ult, 2o quique]", missileName = "HeimerdingerESpell_ult2", slot = _E, type = "circular", speed = 2500, velocidadeFixa = true, range = 970, delay = 0.25, extraEndTime = 0.4, radius = 250, danger = 3, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = true, extend = false},
+		["HeimerdingerEUlt3"] = { displayName = "CH-2 Electron Storm Grenade [Ult, 3o quique]", missileName = "HeimerdingerESpell_ult3", slot = _E, type = "circular", speed = 2500, velocidadeFixa = true, range = 970, delay = 0.25, extraEndTime = 0.4, radius = 250, danger = 3, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = true, extend = false},
 	},
 	["Hwei"] = {
 		["HweiQ"] = { displayName = "Subject: Disaster", slot = _Q, type = "linear", speed = MathHuge, range = 0, delay = 0.25, radius = 0, danger = 4, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
-		["HweiQQ"] = { displayName = "Devastating Fire", missileName = "HweiQQ", slot = _Q, type = "linear", speed = 2600, range = 1200, delay = 0.125, radius = 60, danger = 4, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
-		["HweiQE"] = { displayName = "Severing Bolt", missileName = "HweiQE", slot = _Q, type = "linear", speed = 1600, range = 1500, delay = 0.25, radius = 70, danger = 3, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
-		["HweiQW"] = { displayName = "Devastating Fire [Quick Follow]", missileName = "HweiQW", slot = _Q, type = "linear", speed = 2600, range = 1200, delay = 0.125, radius = 60, danger = 4, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["HweiQQ"] = { displayName = "Devastating Fire", missileName = "HweiQQ", slot = _Q, type = "linear", speed = 2600, velocidadeFixa = true, range = 850, delay = 0.125, radius = 60, raioImpacto = 200, estouraSemAlvo = true, danger = 4, cc = false, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["HweiQE"] = { displayName = "Molten Fissure", missileName = "HweiQE", slot = _Q, type = "linear", speed = MathHuge, velocidadeFixa = true, range = 1180, delay = 0.25, extraEndTime = 5.0, radius = 205, poca = true, crescimento = { subir = 1.5, ficar = 1.5, descer = 1.5 }, danger = 3, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["HweiQW"] = { displayName = "Severing Bolt", missileName = "HweiQW", slot = _Q, type = "circular", speed = MathHuge, velocidadeFixa = true, range = 1200, delay = 2.0, radius = 260, danger = 4, cc = false, collision = false, windwall = false, hitbox = false, fow = true, exception = false, extend = false},
+		["HweiEW"] = { displayName = "Gaze of the Abyss [olho]", missileName = "HweiEW", slot = _E, type = "circular", speed = 1600, velocidadeFixa = true, range = 900, delay = 0.25, extraEndTime = 3.5, radius = 375, danger = 3, cc = false, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+		["HweiEWTrigger"] = { displayName = "Gaze of the Abyss [estouro]", missileName = "HweiEWTriggerMissile", slot = _E, type = "circular", speed = MathHuge, velocidadeFixa = true, range = 0, delay = 0.25, radius = 150, substitui = "HweiEW", danger = 3, cc = false, collision = false, windwall = false, hitbox = false, fow = true, exception = true, extend = false},
 		["HweiE"] = { displayName = "Subject: Torment", missileName = "HweiE", slot = _E, type = "linear", speed = 1600, range = 1200, delay = 0.25, radius = 100, danger = 3, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
-		["HweiEE"] = { displayName = "Grim Visage", missileName = "HweiEE", slot = _E, type = "linear", speed = 1400, range = 1100, delay = 0.25, radius = 70, danger = 3, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
-		["HweiEQ"] = { displayName = "Gaze of the Abyss", missileName = "HweiEQ", slot = _E, type = "linear", speed = 1250, range = 1300, delay = 0.25, radius = 60, danger = 3, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
-		["HweiR"] = { displayName = "Spiraling Despair", missileName = "HweiR", slot = _R, type = "linear", speed = 1200, range = 1200, delay = 0.25, radius = 150, danger = 4, cc = true, collision = false, windwall = false, hitbox = false, fow = true, exception = false, extend = true},
+		["HweiEE"] = { displayName = "Crushing Maw", missileName = "HweiEE", slot = _E, type = "polygon", speed = 1400, velocidadeFixa = true, range = 1100, delay = 0.25, radius = 210, forma = { {224, -266}, {132, 0}, {224, 266}, {0, 351}, {-224, 266}, {-132, 0}, {-224, -266}, {0, -351} }, danger = 3, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = false},
+		["HweiEQ"] = { displayName = "Grim Visage", missileName = "HweiEQ", slot = _E, type = "linear", speed = 1250, velocidadeFixa = true, range = 1025, delay = 0.25, radius = 60, danger = 3, cc = true, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["HweiR"] = { displayName = "Spiraling Despair", missileName = "HweiR", slot = _R, type = "linear", speed = 1500, velocidadeFixa = true, range = 1285, delay = 0.25, radius = 135, estouroPreso = { buff = "hweirdespair", raio = 567, raioInicial = 221, travarEm = 1.0, vidaTrava = 0.10 }, danger = 4, cc = true, collision = "campeao", windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 	},
 	["Illaoi"] = {
-		["IllaoiQ"] = { displayName = "Tentacle Smash", slot = _Q, type = "linear", speed = MathHuge, range = 850, delay = 0.75, radius = 100, danger = 2, cc = false, collision = true, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
+		["IllaoiQ"] = { displayName = "Tentacle Smash", slot = _Q, type = "linear", speed = MathHuge, range = 850, delay = 0.75, radius = 100, danger = 2, cc = false, collision = false, windwall = false, hitbox = true, fow = false, exception = false, extend = true},
 		["IllaoiE"] = { displayName = "Test of Spirit", missileName = "IllaoiEMis", slot = _E, type = "linear", speed = 1900, range = 900, delay = 0.25, radius = 50, danger = 3, cc = false, collision = true, windwall = true, hitbox = false, fow = true, exception = false, extend = true},
 		["IllaoiR"] = { displayName = "Leap of Faith", slot = _R, type = "circular", speed = MathHuge, range = 0, delay = 0.25, radius = 475, danger = 5, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
 	},
@@ -1547,7 +1563,6 @@ function DEvade:__init()
 	self.JEMenu:MenuElement({id = "Traps", name = "Ground Traps", type = MENU})
 	self.JEMenu:MenuElement({id = "Drawing", name = "Drawing", type = MENU})
 	self.JEMenu.Debug = setmetatable({}, {__index = function(_, k)
-		if k == "FileLog" or k == "TrapDiscovery" then return ON end
 		return OFF
 	end})
 	self.JEMenu:MenuElement({id = "Core", name = "Core Settings", type = MENU})
@@ -1630,6 +1645,7 @@ function DEvade:__init()
 	end
 	self.JEMenu.Position:MenuElement({id = "Comfort", name = "Min Distance to Enemy", value = 550, min = 0, max = 1000, step = 50})
 	self.JEMenu.Position:MenuElement({id = "KeepRange", name = "Dodge Without Losing the Target (combo)", value = true})
+	self.JEMenu.Position:MenuElement({id = "ApproachWeight", name = "Dodge Toward the Target (combo)", value = 3, min = 0, max = 10, step = 1})
 	self.JEMenu.Position:MenuElement({id = "Girar", name = "Turn Around vs Facing Spells", value = true})
 	self.JEMenu.Position:MenuElement({id = "ComboOnlyBig", name = "Combo: Dodge Only CC and High Danger", value = true})
 	self.JEMenu.Position:MenuElement({id = "ComboDanger", name = "Combo: Danger to Still Dodge", value = 4, min = 1, max = 5, step = 1})
@@ -1702,6 +1718,7 @@ function DEvade:__init()
 			end
 		end
 	end, 0.04)
+	self._danoRegistro = true
 	pcall(function()
 		Callback.Add("OnTakeDamage", function(source, target, damage)
 			if target and target == myHero and source and source.team ~= myHero.team then
@@ -1709,8 +1726,13 @@ function DEvade:__init()
 			end
 		end)
 	end)
-	Callback.Add("Tick", function() self:Tick() end)
-	Callback.Add("Draw", function() self:Draw() end)
+	Callback.Add("Tick", function()
+		self:ComRegistro("= tick inteiro =", function() self:Tick() end)
+		DespejarLog()
+	end)
+	Callback.Add("Draw", function()
+		self:ComRegistro("= draw inteiro =", function() self:Draw() end)
+	end)
 	function self:AnelParaPoligono(centro, rInterno, rExterno, quality)
 		local fora = self:CircleToPolygon(centro, rExterno, quality)
 		local dentro = self:CircleToPolygon(centro, MathMax(1, rInterno), quality)
@@ -1748,6 +1770,44 @@ function DEvade:__init()
 			local s1, s2 = Point2D(sP - dir), Point2D(sP + dir)
 			local e1, e2 = self:Rotate(s1, eP, MathRad(40)), self:Rotate(s2, eP, -MathRad(40))
 			local path = {s1, e1, e2, s2}
+			return XPolygon:OffsetPolygon(path, self.BoundingRadius), path end,
+		["__forma"] = function(sP, eP, data)
+			local pts = data.forma
+			if not pts or #pts < 3 then return nil end
+			local dir = Point2D(eP - sP):Normalized()
+			local perp = dir:Perpendicular()
+			local path = {}
+			for i = 1, #pts do
+				local a, b = pts[i][1], pts[i][2]
+				path[i] = Point2D(eP.x + dir.x * a + perp.x * b,
+					eP.y + dir.y * a + perp.y * b)
+			end
+			return XPolygon:OffsetPolygon(path, self.BoundingRadius), path end,
+		["HweiEE"] = function(sP, eP, data)
+			local meiaDiag = data.braco or 440
+			local largura = data.radius or 85
+			local dir = Point2D(eP - sP):Normalized()
+			local P = Point2D(eP.x - dir.x * meiaDiag, eP.y - dir.y * meiaDiag)
+			local Q = Point2D(eP.x + dir.x * meiaDiag, eP.y + dir.y * meiaDiag)
+			local L = meiaDiag * 2
+			local sen = MathMin(0.99, (largura * 2) / MathMax(1, L))
+			local ang = MathAsin(sen)
+			local comp = L * MathCos(ang)
+			local function girar(v, a)
+				local c, sn = MathCos(a), MathSin(a)
+				return Point2D(v.x * c - v.y * sn, v.x * sn + v.y * c)
+			end
+			local uA = girar(dir, ang)
+			local uB = girar(dir, -ang)
+			local aA = Point2D(P.x + uA.x * comp, P.y + uA.y * comp)
+			local aB = Point2D(P.x + uB.x * comp, P.y + uB.y * comp)
+			local r1 = { P, aA, Q, Point2D(Q.x - uA.x * comp, Q.y - uA.y * comp) }
+			local r2 = { P, Point2D(Q.x - uB.x * comp, Q.y - uB.y * comp), Q, aB }
+			local ok, path = pcall(function() return XPolygon:ClipPolygons(r1, r2, "union") end)
+			if not ok or not path or #path < 3 then
+				self:LogUmaVez("xhwei", "X FELL BACK: HweiEE union failed -- drawing one bar only")
+				path = r1
+			end
 			return XPolygon:OffsetPolygon(path, self.BoundingRadius), path end,
 		["GravesQLineSpell"] = function(sP, eP, data)
 			local s1 = eP - Point2D(eP - sP):Perpendicular():Normalized() * 240
@@ -2051,20 +2111,13 @@ function DEvade:ScanGroundHazards()
 	local proprias = self:SelfTestOn() and self.JEMenu.Debug.TrapSelfTest and self.JEMenu.Debug.TrapSelfTest:Value()
 	local function classificar(u, origem)
 		if not u or not u.valid or u.dead then return end
-		do
-			local n1 = (u.charName ~= nil) and tostring(u.charName):lower() or ""
-			local n2 = (u.name ~= nil) and tostring(u.name):lower() or ""
-			if n1:find("shark", 1, true) or n2:find("omnom", 1, true)
-				or n1:find("fizz", 1, true) then
-				self:LogUmaVez("caca:" .. n1 .. n2, string.format(
-					"CACA AO TUBARAO: %s | charName=%q name=%q team=%s a %d de mim",
-					tostring(origem), tostring(u.charName), tostring(u.name),
-					tostring(u.team),
-					MathFloor(self:Distance(self:To2D(u.pos), self.MyHeroPos))))
-			end
-		end
-		local pos = self:To2D(u.pos)
-		if self:DistanceSquared(pos, self.MyHeroPos) > alcanceSqr then return end
+		local up = u.pos
+		if not up then return end
+		local ux, uy = up.x, (up.z or up.y)
+		local hx, hy = self.MyHeroPos.x, self.MyHeroPos.y
+		local dx, dy = ux - hx, uy - hy
+		if dx * dx + dy * dy > alcanceSqr then return end
+		local pos = Point2D(ux, uy)
 		local cn = (u.charName ~= nil) and tostring(u.charName):lower() or ""
 		local nm = (u.name ~= nil) and tostring(u.name):lower() or ""
 		if cn == "" and nm == "" then return end
@@ -2166,30 +2219,11 @@ function DEvade:ScanGroundHazards()
 	local VISTAS_PARA_CONFIAR = 3
 	local herois = {}
 	pcall(function()
-		for h = 1, GameHeroCount() do
-			local u = GameHero(h)
-			if u and u.valid and not u.dead then
-				local preso = false
-				for b = 0, (u.buffCount or 0) do
-					local buff = u:GetBuff(b)
-					if buff and buff.count and buff.count > 0
-						and (buff.type == 5 or buff.type == 12) then
-						preso = true
-						break
-					end
-				end
-				local lento = false
-				for b = 0, (u.buffCount or 0) do
-					local buff = u:GetBuff(b)
-					if buff and buff.count and buff.count > 0 and buff.type == 11 then
-						lento = true
-						break
-					end
-				end
-				herois[#herois + 1] = { pos = self:To2D(u.pos), team = u.team, preso = preso,
-					nome = tostring(u.charName or ""), lento = lento,
-					euMesmo = (myHero.networkID ~= nil and u.networkID == myHero.networkID) }
-			end
+		for _, e in pairs(self:EstadoDeControle()) do
+			local u = e.u
+			herois[#herois + 1] = { pos = self:To2D(u.pos), team = u.team, preso = e.preso,
+				nome = tostring(u.charName or ""), lento = e.lento,
+				euMesmo = (myHero.networkID ~= nil and u.networkID == myHero.networkID) }
 		end
 	end)
 	do
@@ -2385,6 +2419,7 @@ local StasisSpells = {
 }
 local AtaquesEmpoderados = {
 	["Ekko"] = { buff = "ekkoeattackbuff", slot = _E, nome = "E do Ekko (ataque teleportado)" },
+	["Hecarim"] = { buff = "hecarimrampspeed", slot = _E, nome = "E do Hecarim (investida que arremessa)" },
 	["Blitzcrank"] = { buff = "powerfist", slot = _E, nome = "E do Blitzcrank (soco carregado)" },
 	["Garen"] = { buff = "garenq", slot = _Q, nome = "Q do Garen (golpe decisivo)" },
 }
@@ -2448,29 +2483,62 @@ function DEvade:HoldInsideRing()
 		end
 	end
 end
+function DEvade:EstadoDeControle()
+	local agora = GameTimer()
+	if self._ctrlCache and self._ctrlT and (agora - self._ctrlT) < 0.1 then
+		return self._ctrlCache
+	end
+	self._ctrlT = agora
+	local mapa = {}
+	local limite = (self.JEMenu.Core.LR and self.JEMenu.Core.LR:Value()) or 2500
+	local limiteSqr = limite * limite
+	local hx, hy = self.MyHeroPos.x, self.MyHeroPos.y
+	pcall(function()
+		for i = 1, GameHeroCount() do
+			local u = GameHero(i)
+			local perto = false
+			if u and u.valid and not u.dead then
+				local up = u.pos
+				if up then
+					local dx, dy = up.x - hx, (up.z or up.y) - hy
+					perto = (dx * dx + dy * dy) <= limiteSqr
+				end
+			end
+			if perto then
+				local preso, lento = false, false
+				for b = 0, (u.buffCount or 0) do
+					local buff = u:GetBuff(b)
+					if buff and buff.count and buff.count > 0 then
+						local tipo = buff.type
+						if tipo == 5 or tipo == 12 then preso = true
+						elseif tipo == 11 then lento = true end
+						if preso and lento then break end
+					end
+				end
+				mapa[u.networkID] = { u = u, preso = preso, lento = lento,
+					cc = (preso or lento) }
+			end
+		end
+	end)
+	self._ctrlCache = mapa
+	return mapa
+end
 function DEvade:RegistrarOndeLevouCC()
 	self._ondeLevouCC = self._ondeLevouCC or {}
 	local agora = GameTimer()
 	pcall(function()
-		for i = 1, GameHeroCount() do
-			local u = GameHero(i)
-			if u and u.valid and not u.dead then
-				local temCC = false
-				for b = 0, (u.buffCount or 0) do
-					local buff = u:GetBuff(b)
-					if buff and buff.count and buff.count > 0
-						and (buff.type == 5 or buff.type == 11 or buff.type == 12) then
-						temCC = true
-						break
-					end
-				end
-				self._tinhaCC = self._tinhaCC or {}
-				local antes = self._tinhaCC[u.networkID]
-				if temCC and not antes then
-					self._ondeLevouCC[u.networkID] = { pos = self:To2D(u.pos), t = agora }
-				end
-				self._tinhaCC[u.networkID] = temCC
+		local estado = self:EstadoDeControle()
+		self._tinhaCC = self._tinhaCC or {}
+		self._viCC = self._viCC or {}
+		for id, e in pairs(estado) do
+			if self._viCC[id] and e.cc and not self._tinhaCC[id] then
+				self._ondeLevouCC[id] = { pos = self:To2D(e.u.pos), t = agora }
 			end
+			self._tinhaCC[id] = e.cc
+			self._viCC[id] = true
+		end
+		for id in pairs(self._viCC) do
+			if not estado[id] then self._viCC[id] = nil self._tinhaCC[id] = nil end
 		end
 		for id, reg in pairs(self._ondeLevouCC) do
 			if agora - reg.t > 5 then self._ondeLevouCC[id] = nil end
@@ -2795,6 +2863,412 @@ end
 local BarrisQueFermentam = {
 	["GragasQ"] = { charName = "Gragas", buff = "gragasq" },
 }
+local FeixesSemCampeao = {
+	["HeimerdingerTurretEnergyBlast"] = {
+		donoCharName = "HeimerTYellow",
+		nome = "HeimerdingerTurretBeam",
+		displayName = "Dano do feixe",
+		vooMinimo = 0,
+		extraEndTime = 0,
+		radius = 60,
+		danger = 2,
+		cc = false,
+		collision = false,
+		alcance = 1015,
+		speed = 2000,
+	},
+	["HeimerdingerTurretBigEnergyBlast"] = {
+		donoCharName = "HeimerTBlue",
+		nome = "HeimerdingerTurretBigBeam",
+		displayName = "Dano do feixe [ult]",
+		vooMinimo = 0,
+		extraEndTime = 0,
+		radius = 90,
+		danger = 3,
+		cc = false,
+		collision = false,
+		alcance = 1015,
+		speed = 1650,
+	},
+}
+function DEvade:TimeDaTorreta(charName, perto)
+	local agora = GameTimer()
+	if not self._torretasT or (agora - self._torretasT) >= 1.0 then
+		self._torretasT = agora
+		self._torretas = {}
+		pcall(function()
+			for oi = 1, Game.ObjectCount() do
+				local o = Game.Object(oi)
+				if o and o.valid and o.pos and tostring(o.charName) == tostring(charName) then
+					self._torretas[#self._torretas + 1] = { p = self:To2D(o.pos), team = o.team }
+				end
+			end
+		end)
+	end
+	local melhor, resposta = MathHuge, nil
+	for i = 1, #(self._torretas or {}) do
+		local t = self._torretas[i]
+		local d = self:Distance(t.p, perto)
+		if d < melhor and d <= 250 then melhor, resposta = d, t.team end
+	end
+	return resposta
+end
+function DEvade:AtualizarEstourosPresos()
+	local nHeroes = GameHeroCount()
+	if not self._indiceMarca or self._indiceMarcaN ~= nHeroes then
+		self._indiceMarcaN = nHeroes
+		self._indiceMarca = {}
+		local presentes = {}
+		local soInimigos = not self:IsArena()
+		for i = 1, nHeroes do
+			local h = GameHero(i)
+			local ameaca = h and h.charName and ((not soInimigos)
+				or h.team ~= myHero.team
+				or h.networkID == myHero.networkID)
+			if ameaca then presentes[tostring(h.charName)] = true end
+		end
+		for dono, entradas in pairs(SpellDatabase) do
+			if type(entradas) == "table" and presentes[tostring(dono)] then
+				for nome, ee in pairs(entradas) do
+					if type(ee) == "table" and ee.estouroPreso then
+						self._indiceMarca[#self._indiceMarca + 1] = { nome = nome, cfg = ee.estouroPreso, ee = ee }
+					end
+				end
+			end
+		end
+	end
+	if #self._indiceMarca == 0 then return end
+	local agora = GameTimer()
+	local vivos = {}
+	self._marcaPos = self._marcaPos or {}
+	pcall(function()
+		for hh = 1, GameHeroCount() do
+			local u = GameHero(hh)
+			if u and u.valid and not u.dead then
+				for k = 1, #self._indiceMarca do
+					local m = self._indiceMarca[k]
+					local resta = m.cfg.buff and self:BuffRestante(u, m.cfg.buff) or 0
+					if resta <= 0.05 then resta = nil end
+					local emMim = myHero and u.networkID == myHero.networkID
+					if resta and emMim then
+						self:LogComIntervalo("marcaeu:" .. m.nome, 3, string.format(
+							"MARK ON ME: %s | nao ha desvio -- o circulo de %d anda comigo, "
+							.. "estoura em %.2fs",
+							m.nome, MathFloor(m.cfg.raio or 0), resta))
+						local dono
+						pcall(function()
+							for hh2 = 1, GameHeroCount() do
+								local w = GameHero(hh2)
+								if w and w.valid and not w.dead and w.team ~= myHero.team
+									and self:Distance(self:To2D(w.pos), self.MyHeroPos) < 3000 then
+									dono = dono or w
+								end
+							end
+						end)
+						local dano = dono and self:GetIncomingDamage(dono, m.ee.slot) or 0
+						local vida = (myHero.health or 0) + (myHero.shieldAD or 0)
+						if dano > 0 and dano >= vida then
+							self:UseInvulnerability(string.format(
+								"marca de %s: %d de dano contra %d de vida",
+								m.nome, MathFloor(dano), MathFloor(vida)), resta)
+						elseif dano <= 0 then
+							self:LogUmaVez("marcadano:" .. m.nome, string.format(
+								"MARK ON ME: %s sem numero de dano -- a stasis nao vai "
+								.. "disparar, porque letalidade e o portao dela", m.nome))
+						end
+					end
+					if resta and not emMim then
+						local nome = m.nome .. "Marca:" .. tostring(u.networkID)
+						vivos[nome] = true
+						self._marcaTotal = self._marcaTotal or {}
+						if not self._marcaTotal[nome] then self._marcaTotal[nome] = resta end
+						local total = self._marcaTotal[nome]
+						local prog = (total and total > 0) and (1 - (resta / total)) or 1
+						if prog < 0 then prog = 0 elseif prog > 1 then prog = 1 end
+						local ri = m.cfg.raioInicial or m.cfg.raio
+						local raioAgora = ri + ((m.cfg.raio or 0) - ri) * prog
+						if m.cfg.medirEstouro then
+							self._marcaVida = self._marcaVida or {}
+							local antes = self._marcaVida[nome]
+							local hp = u.health or 0
+							if antes and (antes - hp) > 150 then
+								self:Log(string.format(
+									"BLAST TIMING: %s perdeu %d de vida | %.2fs desde a marca "
+									.. "| ainda faltavam %.2fs de %s | total da marca %.2fs",
+									tostring(u.charName), MathFloor(antes - hp),
+									(total or 0) - resta, resta, tostring(m.cfg.buff),
+									total or 0))
+							end
+							self._marcaVida[nome] = hp
+						end
+						local pos = self:To2D(u.pos)
+						local ant = self._marcaPos[nome]
+						local antR = self._marcaRaio and self._marcaRaio[nome]
+						local mexeu = (not ant) or self:Distance(ant, pos) > 20
+							or (not antR) or MathAbs(antR - raioAgora) > 15
+						if mexeu and self:PosicaoValida(pos) then
+							self._marcaPos[nome] = pos
+							self._marcaRaio = self._marcaRaio or {}
+							self._marcaRaio[nome] = raioAgora
+							local vidaMax = u.maxHealth or 0
+							local vidaFrac = (vidaMax > 1) and ((u.health or 0) / vidaMax) or 1
+							local trava = (resta <= (m.cfg.travarEm or 1.0))
+								or (vidaFrac < (m.cfg.vidaTrava or 0.10))
+							local zona = {
+								type = "circular", radius = raioAgora, speed = MathHuge,
+								range = 0, delay = MathMax(0, resta),
+								danger = m.ee.danger, cc = m.ee.cc,
+								displayName = m.ee.displayName, slot = m.ee.slot,
+								collision = false, windwall = false,
+								poca = not trava,
+								porTick = true, silencioso = true,
+							}
+							if trava then
+								self:LogComIntervalo("trava:" .. nome, 2, string.format(
+									"BLAST LOCKED: %s | passagem fechada -- %s",
+									tostring(u.charName),
+									(vidaFrac < (m.cfg.vidaTrava or 0.10))
+										and string.format("ele esta com %.0f%% de vida e morre aqui", vidaFrac * 100)
+										or string.format("faltam %.2fs e vai estourar", resta)))
+							end
+							local z1, z2 = self:GetPaths(pos, pos, zona, nome)
+							if z1 then
+								self:SpellExistsThenRemove(nome)
+								self:AddSpell(z1, z2, pos, pos, zona, MathHuge, 0,
+									MathMax(0, resta), raioAgora, nome)
+								self:LogUmaVez("marca:" .. nome, string.format(
+									"STUCK BLAST: %s marcou %s -- circulo de %d preso nele, "
+									.. "estoura em %.2fs (tempo do proprio buff)",
+									m.nome, tostring(u.charName),
+									MathFloor(m.cfg.raio or 0), resta))
+							end
+						end
+					end
+				end
+			end
+		end
+	end)
+	self._marcasVivas = self._marcasVivas or {}
+	self._marcaFim = self._marcaFim or {}
+	for nome in pairs(self._marcasVivas) do
+		if not vivos[nome] then
+			local ultima = self._marcaPos[nome]
+			local ultimoR = self._marcaRaio and self._marcaRaio[nome]
+			if ultima and ultimoR and not self._marcaFim[nome] then
+				self._marcaFim[nome] = agora
+				local zonaF = {
+					type = "circular", radius = ultimoR, speed = MathHuge, range = 0,
+					delay = 0, danger = 4, cc = true,
+					displayName = "estouro na marca", collision = false, windwall = false,
+					porTick = true, silencioso = true, extraEndTime = 0.35,
+				}
+				local f1, f2 = self:GetPaths(ultima, ultima, zonaF, nome)
+				if f1 then
+					self:SpellExistsThenRemove(nome)
+					self:AddSpell(f1, f2, ultima, ultima, zonaF, MathHuge, 0, 0, ultimoR, nome)
+					if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+						local aindaVivo = false
+						pcall(function()
+							local alvoId = tonumber(tostring(nome):match(":(%d+)$") or "")
+							for hz = 1, GameHeroCount() do
+								local w = GameHero(hz)
+								if w and w.valid and not w.dead and w.networkID == alvoId then
+									aindaVivo = true break
+								end
+							end
+						end)
+						self:Log(string.format(
+							"BLAST FROZEN: %s | %s -- estoura onde parou, com raio %d",
+							nome,
+							aindaVivo and "a marca chegou ao fim (estouro no tempo)"
+								or "a vitima morreu com a marca (estouro adiantado)",
+							MathFloor(ultimoR)))
+					end
+				end
+			elseif self._marcaFim[nome] and (agora - self._marcaFim[nome]) > 0.5 then
+				self:SpellExistsThenRemove(nome)
+				self._marcaPos[nome] = nil
+				if self._marcaRaio then self._marcaRaio[nome] = nil end
+				if self._marcaTotal then self._marcaTotal[nome] = nil end
+				self._marcaFim[nome] = nil
+			end
+			if self._marcaFim[nome] then vivos[nome] = true end
+		else
+			self._marcaFim[nome] = nil
+		end
+	end
+	self._marcasVivas = vivos
+	if self.DetectedSpells then
+		for i = 1, #self.DetectedSpells do
+			local s3 = self.DetectedSpells[i]
+			local cfg = s3 and s3.estouroPreso
+			if cfg and cfg.atrasoReserva and s3._bloqueador and not s3._reservaReg then
+				local v3 = s3._bloqueador
+				if v3 and v3.networkID and not (myHero and v3.networkID == myHero.networkID) then
+					s3._reservaReg = true
+					self._reservas = self._reservas or {}
+					self._reservas[tostring(s3.name) .. "Reserva:" .. tostring(v3.networkID)] = {
+						alvo = v3.networkID, t0 = GameTimer(), cfg = cfg,
+						danger = s3.danger, cc = s3.cc,
+						displayName = s3.displayName, slot = s3.slot,
+					}
+					if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+						self:Log(string.format(
+							"STUCK BLAST (tempo declarado): %s marcou %s -- circulo de %d, "
+							.. "estoura em %.1fs | sem o nome do buff, este tempo e aproximado",
+							tostring(s3.name), tostring(v3.charName),
+							MathFloor(cfg.raio or 0), cfg.atrasoReserva))
+					end
+				end
+			end
+		end
+	end
+	if self._reservas then
+		for nome, m2 in pairs(self._reservas) do
+			local dono
+			pcall(function()
+				for hh = 1, GameHeroCount() do
+					local u2 = GameHero(hh)
+					if u2 and u2.valid and not u2.dead and u2.networkID == m2.alvo then dono = u2 break end
+				end
+			end)
+			local resta2 = (m2.cfg.atrasoReserva or 0) - (agora - m2.t0)
+			if not dono or resta2 < -0.35 then
+				self:SpellExistsThenRemove(nome)
+				self._reservas[nome] = nil
+			else
+				local pos2 = self:To2D(dono.pos)
+				local ant2 = self._marcaPos[nome]
+				if self:PosicaoValida(pos2) and ((not ant2) or self:Distance(ant2, pos2) > 20) then
+					self._marcaPos[nome] = pos2
+					local zona2 = {
+						type = "circular", radius = m2.cfg.raio, speed = MathHuge, range = 0,
+						delay = MathMax(0, resta2), danger = m2.danger, cc = m2.cc,
+						displayName = m2.displayName, slot = m2.slot,
+						collision = false, windwall = false,
+						porTick = true, silencioso = true,
+					}
+					local y1, y2 = self:GetPaths(pos2, pos2, zona2, nome)
+					if y1 then
+						self:SpellExistsThenRemove(nome)
+						self:AddSpell(y1, y2, pos2, pos2, zona2, MathHuge, 0,
+							MathMax(0, resta2), m2.cfg.raio, nome)
+					end
+				end
+			end
+		end
+	end
+	if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+		local pistas = {}
+		for k = 1, #self._indiceMarca do
+			local pk = self._indiceMarca[k].cfg.pista
+			if pk then pistas[#pistas + 1] = { p = tostring(pk):lower(), nome = self._indiceMarca[k].nome } end
+		end
+		if #pistas > 0 then
+			pcall(function()
+				for hh = 1, GameHeroCount() do
+					local u = GameHero(hh)
+					if u and u.valid then
+						for b = 0, (u.buffCount or 0) do
+							local bf = u:GetBuff(b)
+							if bf and bf.count and bf.count > 0 and bf.name and bf.name ~= "" then
+								local nm = tostring(bf.name)
+								local baixo = nm:lower()
+								for pi = 1, #pistas do
+									if baixo:find(pistas[pi].p, 1, true) then
+										self:LogUmaVez("pista:" .. nm .. ":" .. tostring(u.charName), string.format(
+											"MARK CANDIDATE: %q em %s | dura %.2fs | pista de %s",
+											nm, tostring(u.charName),
+											(bf.expireTime or 0) - agora, pistas[pi].nome))
+									end
+								end
+							end
+						end
+					end
+				end
+			end)
+		end
+	end
+end
+function DEvade:AtualizarFendas()
+	if not self.DetectedSpells then return end
+	for i = 1, #self.DetectedSpells do
+		local s = self.DetectedSpells[i]
+		if s and s.crescimento and not s._fendaReg and s.startPos and s.endPos then
+			s._fendaReg = true
+			self._fendas = self._fendas or {}
+			self._fendas[tostring(s.name)] = {
+				t0 = s.startTime or GameTimer(),
+				A = s.startPos, B = s.endPos, cfg = s.crescimento,
+				raio = s.radius, danger = s.danger, cc = s.cc, poca = s.poca,
+				displayName = s.displayName, slot = s.slot,
+				casterTeam = s.casterTeam, casterId = s.casterId,
+			}
+		end
+	end
+	if not self._fendas or next(self._fendas) == nil then return end
+	local agora = GameTimer()
+	for nome, f in pairs(self._fendas) do
+		local t = agora - f.t0
+		local subir, ficar, descer = f.cfg.subir or 0, f.cfg.ficar or 0, f.cfg.descer or 0
+		local total = subir + ficar + descer
+		if t >= total then
+			self:SpellExistsThenRemove(nome)
+			self._fendas[nome] = nil
+		elseif t >= 0 then
+			local ini, fim = 0, 1
+			if subir > 0 and t < subir then
+				fim = t / subir
+			elseif t >= subir + ficar and descer > 0 then
+				ini = (t - subir - ficar) / descer
+			end
+			local dx, dy = f.B.x - f.A.x, f.B.y - f.A.y
+			local p = Point2D(f.A.x + dx * ini, f.A.y + dy * ini)
+			local q = Point2D(f.A.x + dx * fim, f.A.y + dy * fim)
+			if self:Distance(p, q) > 1 then
+				local zona = {
+					type = "linear", radius = f.raio, speed = MathHuge, range = 0,
+					delay = 0, danger = f.danger, cc = f.cc, poca = f.poca,
+					displayName = f.displayName, slot = f.slot,
+					casterTeam = f.casterTeam, casterId = f.casterId,
+					collision = false, windwall = false,
+					porTick = true, silencioso = true, extraEndTime = 0.2,
+				}
+				local z1, z2 = self:GetPaths(p, q, zona, nome)
+				if z1 then
+					self:SpellExistsThenRemove(nome)
+					self:AddSpell(z1, z2, p, q, zona, MathHuge, self:Distance(p, q), 0, f.raio, nome)
+				end
+			end
+		end
+	end
+end
+function DEvade:ApagarZonaSubstituida()
+	if not self.DetectedSpells or #self.DetectedSpells < 2 then return end
+	local mata
+	for i = 1, #self.DetectedSpells do
+		local s = self.DetectedSpells[i]
+		if s and s.substitui then
+			mata = mata or {}
+			mata[tostring(s.substitui)] = s.casterId or false
+		end
+	end
+	if not mata then return end
+	for i = #self.DetectedSpells, 1, -1 do
+		local s = self.DetectedSpells[i]
+		if s and not s.substitui then
+			local dono = mata[tostring(s.name)]
+			if dono ~= nil and (dono == false or s.casterId == nil or dono == s.casterId) then
+				if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+					self:Log(string.format(
+						"ZONE SUPERSEDED: %s apagada -- a etapa seguinte nasceu e a "
+						.. "primeira nao pode mais acertar ninguem", tostring(s.name)))
+				end
+				TableRemove(self.DetectedSpells, i)
+			end
+		end
+	end
+end
 function DEvade:ApagarBarrilExplodido()
 	if not self.DetectedSpells or #self.DetectedSpells == 0 then return end
 	for i = #self.DetectedSpells, 1, -1 do
@@ -3139,6 +3613,7 @@ function DEvade:AtualizarZonasPorBuff()
 end
 local ApelidosDeCast = {
 	["Braum"] = { ["BraumRWrapper"] = "BraumR" },
+	["Gwen"] = { ["GwenRRecast"] = "GwenR" },
 	["Caitlyn"] = {
 		["CaitlynQ"] = "CaitlynPiltoverPeacemaker",
 		["CaitlynE"] = "CaitlynEntrapment",
@@ -3249,6 +3724,47 @@ function DEvade:RegistrarAmostraDeDano(unit, name, data, distancia)
 		nome = name, charName = unit.charName, slot = data.slot, unit = unit,
 		tImpacto = GameTimer() + (data.delay or 0) + voo,
 	}
+end
+function DEvade:AtualizarQuedaDeVida()
+	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	if not self._danoRegistro then return end
+	self._vidaVista = self._vidaVista or {}
+	local agora = GameTimer()
+	for i = 1, GameHeroCount() do
+		local h = GameHero(i)
+		if h and h.valid and h ~= myHero then
+			local id = tostring(h.networkID or i)
+			local hp = tonumber(h.health) or 0
+			local antes = self._vidaVista[id]
+			if antes and hp < antes - 0.5 then
+				local desde, dequem = nil, nil
+				for gid, ref in pairs(self._golpeAtivo or {}) do
+					if ref.t0 and (not desde or (agora - ref.t0) < desde) then
+						desde, dequem = agora - ref.t0, gid
+					end
+				end
+				if not desde then
+					self._danoMudo = (self._danoMudo or 0) + 1
+					self:LogComIntervalo("danomudo", 30, string.format(
+						"DAMAGE DROP: %d quedas de vida descartadas ate aqui por nao haver "
+						.. "golpe de objeto ativo para medir contra", self._danoMudo))
+				else
+					self._danoN = (self._danoN or 0) + 1
+					if self._danoN <= 400 then
+						self:Log(string.format(
+							"DAMAGE DROP #%d: %s#%s | -%d (%d -> %d) | %.2fs desde o golpe de %s",
+							self._danoN, tostring(h.charName), id,
+							MathFloor(antes - hp + 0.5), MathFloor(antes), MathFloor(hp),
+							desde, dequem))
+					elseif self._danoN == 401 then
+						self:Log("DAMAGE DROP: teto de 400 eventos, parando aqui -- silencio "
+							.. "abaixo desta linha e o teto, e nao ausencia de dano")
+					end
+				end
+			end
+			self._vidaVista[id] = hp
+		end
+	end
 end
 function DEvade:AtualizarAmostrasDeDano()
 	local lista = self._amostraDano
@@ -3502,6 +4018,21 @@ function DEvade:PosicaoValida(p)
 	if x ~= x or y ~= y then return false end
 	return MathAbs(x) < 60000 and MathAbs(y) < 60000
 end
+function DEvade:Marco(nome)
+	if not (self.JEMenu and self.JEMenu.Debug and self.JEMenu.Debug.TrapDiscovery
+		and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	local agora = os.clock()
+	if nome and self._marcoT then
+		local ms = (agora - self._marcoT) * 1000
+		self._marcos = self._marcos or {}
+		local c = self._marcos[nome]
+		if not c then c = { n = 0, soma = 0, pior = 0 } self._marcos[nome] = c end
+		c.n = c.n + 1
+		c.soma = c.soma + ms
+		if ms > c.pior then c.pior = ms end
+	end
+	self._marcoT = agora
+end
 function DEvade:ComRegistro(etapa, fn)
 	local medindo = self.JEMenu and self.JEMenu.Debug and self.JEMenu.Debug.TrapDiscovery
 		and self.JEMenu.Debug.TrapDiscovery:Value()
@@ -3525,12 +4056,26 @@ function DEvade:ComRegistro(etapa, fn)
 			end
 			TableSort(linhas, function(x, y) return x.total > y.total end)
 			local partes = {}
-			for k = 1, MathMin(8, #linhas) do
+			for k = 1, MathMin(10, #linhas) do
 				partes[#partes + 1] = string.format("%s %.0fms in %dx (worst %.0f)",
 					linhas[k].nome, linhas[k].total, linhas[k].n, linhas[k].pior)
 			end
 			self:Log("TICK COST over 10s: " .. table.concat(partes, " | "))
 			self._custo = {}
+			if self._marcos and next(self._marcos) then
+				local ml = {}
+				for nome, d in pairs(self._marcos) do
+					ml[#ml + 1] = { nome = nome, total = d.soma, n = d.n, pior = d.pior }
+				end
+				TableSort(ml, function(x, y) return x.total > y.total end)
+				local mp = {}
+				for k = 1, MathMin(12, #ml) do
+					mp[#mp + 1] = string.format("%s %.0fms in %dx (worst %.0f)",
+						ml[k].nome, ml[k].total, ml[k].n, ml[k].pior)
+				end
+				self:Log("TICK PARTS over 10s: " .. table.concat(mp, " | "))
+				self._marcos = {}
+			end
 		end
 	end
 	if not ok then
@@ -3538,6 +4083,246 @@ function DEvade:ComRegistro(etapa, fn)
 			"ERROR in %s: %s -- this step did not run", tostring(etapa), tostring(err)))
 	end
 	return ok
+end
+local GolpesDeObjeto = {
+	["IllaoiMinion"] = {
+		dono = "Illaoi",
+		buff = "illaoitentacleattack",
+		tetoCurto = 2.0,
+		nome = "IllaoiTentaculo", displayName = "Tentaculo (passiva)",
+		slot = _Q, danger = 2, cc = false,
+		mesmoQue = { charName = "Illaoi", spell = "IllaoiQ" },
+		duracaoBuff = 1.0,
+		buffRapido = "illaoir2", fatorRapido = 0.5,
+		medirGolpe = false,
+		esperaAntes = 0, sobraDepois = 0,
+	},
+}
+function DEvade:AtualizarGolpesDeObjeto()
+	if next(GolpesDeObjeto) == nil then return end
+	local nHer = GameHeroCount()
+	if self._golpeDonoN ~= nHer then
+		self._golpeDonoN = nHer
+		self._golpeDono = false
+		pcall(function()
+			local soInimigos = not self:IsArena()
+			for i = 1, nHer do
+				local hero = GameHero(i)
+				local ameaca = hero and hero.valid and ((not soInimigos)
+					or hero.team ~= myHero.team
+					or hero.networkID == myHero.networkID)
+				if ameaca then
+					for _, c in pairs(GolpesDeObjeto) do
+						if c.dono and tostring(hero.charName) == c.dono then
+							self._golpeDono = true
+						end
+					end
+				end
+			end
+		end)
+		if not self._golpeDono then
+			self:LogUmaVez("golpedono", "OBJECT STRIKES OFF: nenhum dono INIMIGO de golpe de "
+				.. "objeto nesta partida -- a varredura de objetos nao roda")
+		end
+	end
+	if not self._golpeDono then return end
+	local agora = GameTimer()
+	local vivos = {}
+	local function olhar(u, idx)
+		local cfg = u and u.valid and GolpesDeObjeto[tostring(u.charName)]
+		if not cfg then return end
+		self._objetosVistos = self._objetosVistos or {}
+		self._objetosVistos[tostring(u.networkID or idx)] = u
+		if u.pos then
+			local dv
+			pcall(function()
+				local d = u.dir
+				if d and (d.x ~= 0 or (d.z or d.y or 0) ~= 0) then dv = Point2D(d.x, d.z or d.y) end
+			end)
+			self._objetoLembrado = self._objetoLembrado or {}
+			local alvejavel
+			pcall(function() alvejavel = u.isTargetable end)
+			self._objetoLembrado[tostring(u.networkID or idx)] = {
+				pos = self:To2D(u.pos), dir = dv, visto = agora, cfg = cfg,
+				vida = u.health, alvejavel = alvejavel, morto = u.dead,
+				buffs = (function()
+					local l = {}
+					pcall(function()
+						for b = 0, (u.buffCount or 0) do
+							local bf = u:GetBuff(b)
+							if bf and bf.name and bf.name ~= "" then l[#l + 1] = tostring(bf.name) end
+						end
+					end)
+					return table.concat(l, " ")
+				end)(),
+			}
+		end
+		local alcance, raio, atraso = cfg.alcance, cfg.raio, cfg.atrasoDoDano
+		if cfg.mesmoQue then
+			local base = SpellDatabase[cfg.mesmoQue.charName]
+			base = base and base[cfg.mesmoQue.spell]
+			if base then
+				alcance = base.range or alcance
+				raio = base.radius or raio
+				atraso = base.delay or atraso
+			end
+		end
+		if not (alcance and raio and atraso) then return end
+		local rapido = cfg.buffRapido and self:BuffRestante(u, cfg.buffRapido) or 0
+		if rapido > 0.05 then
+			atraso = atraso * (cfg.fatorRapido or 0.5)
+		end
+		local presente = self:UnidadeTemBuff(u, cfg.buff)
+		local resta = presente and (cfg.duracaoBuff or 1.0) or 0
+		if (not resta or resta <= 0.05) and cfg.tetoCurto then
+			pcall(function()
+				for b = 0, (u.buffCount or 0) do
+					local bf = u:GetBuff(b)
+					if bf and bf.name and bf.name ~= "" then
+						local r = (bf.expireTime or 0) - agora
+						if r > 0.05 and r <= cfg.tetoCurto then
+							resta = r
+							self:LogUmaVez("curto:" .. tostring(bf.name), string.format(
+								"SHORT BUFF AS STRIKE: %q com %.2fs num %s -- usado como golpe",
+								tostring(bf.name), r, tostring(u.charName)))
+							break
+						end
+					end
+				end
+			end)
+		end
+		local id = tostring(u.networkID or idx)
+		self:LogUmaVez("vitent:" .. id, string.format(
+			"TENTACLE TRACKED: #%s entrou na conta -- daqui em diante, ausencia de OBJECT "
+			.. "STRIKE significa que ele nao bateu, e nao que eu nao vi", id))
+		local ref = self._golpeAtivo[id]
+		if resta and resta > 0.05 then
+			if not ref or not ref.tinhaBuff then
+				ref = { u = u, cfg = cfg, t0 = agora }
+				self._golpeAtivo[id] = ref
+			else
+				ref.u = u
+			end
+			ref.tinhaBuff = true
+		end
+		if ref and not presente then ref.tinhaBuff = false end
+		if not ref then return end
+		ref.u = u
+		local espera = cfg.esperaAntes or 0
+		local sobra = cfg.sobraDepois or 0
+		local decorrido = agora - ref.t0
+		local inicio = espera
+		local fim = espera + atraso + sobra
+		if decorrido < inicio or decorrido > fim then
+			if decorrido > fim then self._golpeAtivo[id] = nil end
+			return
+		end
+		local pos = self:To2D(u.pos)
+		if not self:PosicaoValida(pos) then return end
+		local nome = cfg.nome .. ":" .. id
+		vivos[nome] = true
+		local dir
+		pcall(function()
+			local d = u.dir
+			if d and (d.x ~= 0 or (d.z or d.y or 0) ~= 0) then
+				dir = Point2D(d.x, d.z or d.y)
+			end
+		end)
+		local ateODano = MathMax(0, (inicio + atraso) - decorrido)
+		local zona, eP
+		if dir then
+			local n = MathSqrt(dir.x * dir.x + dir.y * dir.y)
+			eP = Point2D(pos.x + dir.x / n * alcance, pos.y + dir.y / n * alcance)
+			zona = {
+				type = "linear", radius = raio, speed = MathHuge, range = alcance,
+				delay = ateODano, danger = cfg.danger, cc = cfg.cc,
+				displayName = cfg.displayName, slot = cfg.slot,
+				collision = false, windwall = false, porTick = true, silencioso = true,
+				extraEndTime = 0.25,
+			}
+		else
+			eP = pos
+			zona = {
+				type = "circular", radius = alcance, speed = MathHuge, range = 0,
+				delay = ateODano, danger = cfg.danger, cc = cfg.cc,
+				displayName = cfg.displayName, slot = cfg.slot,
+				collision = false, windwall = false, porTick = true, silencioso = true,
+				extraEndTime = 0.25,
+			}
+		end
+		local p1, p2 = self:GetPaths(pos, eP, zona, nome)
+		if p1 then
+			self:SpellExistsThenRemove(nome)
+			self:AddSpell(p1, p2, pos, eP, zona, MathHuge,
+				dir and alcance or 0, ateODano, dir and raio or alcance, nome)
+			self:LogComIntervalo("golpe:" .. id, 2, string.format(
+				"OBJECT STRIKE: %s #%s (networkID=%s) | %s | %.2fs desde a batida anterior, "
+				.. "proxima em %.2fs",
+				tostring(u.charName), id, tostring(u.networkID),
+				dir and "corredor pela direcao do objeto" or "CIRCULO -- o jogo nao deu direcao",
+				decorrido, ateODano))
+		end
+		if cfg.medirGolpe then
+			self._golpeVida = self._golpeVida or {}
+			pcall(function()
+				for hh = 1, GameHeroCount() do
+					local v = GameHero(hh)
+					if v and v.valid and not v.dead and self:Distance(self:To2D(v.pos), pos) < (alcance + raio) then
+						local chave = id .. ":" .. tostring(v.networkID)
+						local antes = self._golpeVida[chave]
+						local hp = v.health or 0
+						if antes and (antes - hp) > 20 then
+							self:Log(string.format(
+								"STRIKE TIMING: %s perdeu %d de vida | %.2fs desde a batida anterior "
+								.. "| buff em %.2fs | eu previa o dano em %.2fs",
+								tostring(v.charName), MathFloor(antes - hp),
+								decorrido, resta or -1, ateODano))
+						end
+						self._golpeVida[chave] = hp
+					end
+				end
+			end)
+		end
+	end
+	self._golpeAtivo = self._golpeAtivo or {}
+	for id, ref in pairs(self._golpeAtivo) do
+		if ref.u and ref.u.valid then pcall(olhar, ref.u, id)
+		else self._golpeAtivo[id] = nil end
+	end
+	self._golpeT = self._golpeT or 0
+	if agora - self._golpeT >= 0.1 then
+		self._golpeT = agora
+		local LOTE = 64
+		local function faixa(get, de, ate)
+			for i = de, ate do olhar(get(i), i) end
+		end
+		local function varrer(get, n)
+			local i = 1
+			while i <= n do
+				local ate = i + LOTE - 1
+				if ate > n then ate = n end
+				if not pcall(faixa, get, i, ate) then
+					for k = i, ate do
+						local ok, err = pcall(olhar, get(k), k)
+						if not ok then
+							self:LogUmaVez("golpeerr", "OBJECT STRIKE ERROR: " .. tostring(err))
+						end
+					end
+				end
+				i = ate + 1
+			end
+		end
+		local nMin, nObj = 0, 0
+		pcall(function() nMin = GameMinionCount() end)
+		varrer(GameMinion, nMin)
+		pcall(function() nObj = Game.ObjectCount() end)
+		varrer(Game.Object, nObj)
+	end
+	self._golpesVivos = self._golpesVivos or {}
+	for nome in pairs(self._golpesVivos) do
+		if not vivos[nome] then self:SpellExistsThenRemove(nome) end
+	end
+	self._golpesVivos = vivos
 end
 function DEvade:AtualizarZonasPorObjeto()
 	if next(ZonasPorObjeto) == nil then return end
@@ -3854,6 +4639,9 @@ function DEvade:PosicaoPassada(unit, segundos)
 end
 function DEvade:RegistrarBuffsNovos()
 	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	local agora = GameTimer()
+	if self._buffNovoT and (agora - self._buffNovoT) < 0.25 then return end
+	self._buffNovoT = agora
 	pcall(function()
 		for i = 0, (myHero.buffCount or 0) do
 			local b = myHero:GetBuff(i)
@@ -3899,6 +4687,9 @@ function DEvade:RegistrarRecast(unit, name)
 end
 function DEvade:RegistrarCCNaoRemovivel()
 	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	local agora = GameTimer()
+	if self._ccNaoRemT and (agora - self._ccNaoRemT) < 0.25 then return end
+	self._ccNaoRemT = agora
 	pcall(function()
 		local n = myHero.buffCount or 0
 		for i = 0, n do
@@ -5192,12 +5983,13 @@ end
 function DEvade:BuffRestante(unit, nome)
 	if not (unit and nome) then return 0 end
 	local resta = 0
+	local alvo, agora = tostring(nome):lower(), GameTimer()
 	pcall(function()
 		for b = 0, (unit.buffCount or 0) do
 			local buff = unit:GetBuff(b)
 			if buff and buff.name
-				and tostring(buff.name):lower() == tostring(nome):lower() then
-				local r = (buff.expireTime or 0) - GameTimer()
+				and tostring(buff.name):lower() == alvo then
+				local r = (buff.expireTime or 0) - agora
 				if r > resta then resta = r end
 			end
 		end
@@ -5449,6 +6241,8 @@ function DEvade:GetBestEvadePos(spells, radius, mode, extra, force)
 		local pesoDaBase = (self.JEMenu.Position.LadoDaBase and self.JEMenu.Position.LadoDaBase:Value()) or 0
 		local baseAliada = (pesoDaBase > 0 and not emCombate) and self:PosicaoDaBase() or nil
 		local pesoEixo = (self.JEMenu.Position.AxisPenalty and self.JEMenu.Position.AxisPenalty:Value()) or 400
+		local pesoAproximar = (self.JEMenu.Position.ApproachWeight
+			and self.JEMenu.Position.ApproachWeight:Value()) or 3
 		local temProjetil = false
 		for i = 1, #self.DodgeableSpells do
 			local z = self.DodgeableSpells[i]
@@ -5461,12 +6255,12 @@ function DEvade:GetBestEvadePos(spells, radius, mode, extra, force)
 				+ pesoEixo * (e.a or 0)
 			e.alc = (not emCombate) or (alvoDoAtaque == nil)
 				or (self:Distance(e.p, alvoDoAtaque) <= alcanceDeAtaque)
-			if emCombate and alvoDoAtaque then
+			if emCombate and alvoDoAtaque and pesoAproximar > 0 then
 				local excAgora = MathMax(0,
 					self:Distance(self.MyHeroPos, alvoDoAtaque) - alcanceDeAtaque)
 				local excDepois = MathMax(0,
 					self:Distance(e.p, alvoDoAtaque) - alcanceDeAtaque)
-				e.s = e.s - (excAgora - excDepois)
+				e.s = e.s - (excAgora - excDepois) * pesoAproximar
 			end
 			if not emCombate and pesoDaBase > 0 and baseAliada then
 				local aproxima = self:Distance(self.MyHeroPos, baseAliada)
@@ -5559,6 +6353,10 @@ function DEvade:GetMovePath()
 end
 function DEvade:GetPaths(startPos, endPos, data, name)
 	local path, path2
+	if data.forma and self.SpecialSpells["__forma"] then
+		path, path2 = self.SpecialSpells["__forma"](startPos, endPos, data)
+		if path then return path, path2 end
+	end
 	if self.SpecialSpells[name] then
 		path, path2 = self.SpecialSpells[name](startPos, endPos, data)
 		if name ~= "ZoeE" then return path, path2 end
@@ -6382,6 +7180,10 @@ function DEvade:AddSpell(p1, p2, sP, eP, data, speed, range, delay, radius, name
 		auraDeLuta = data.auraDeLuta,
 		extraEndTime = data.extraEndTime,
 		presoAoCaster = data.presoAoCaster,
+		braco = data.braco, forma = data.forma, estouraSemAlvo = data.estouraSemAlvo,
+		estouroPreso = data.estouroPreso,
+		crescimento = data.crescimento,
+		substitui = data.substitui,
 		raioImpacto = data.raioImpacto,
 		extraEndTime = data.extraEndTime, lethal = data.lethal, ring = data.ring,
 		naoAtravessar = data.naoAtravessar, pegarMaisPerto = data.pegarMaisPerto,
@@ -6890,6 +7692,7 @@ function DEvade:LoadEvadeSpells()
 end
 function DEvade:Tick()
 	if not self.JEMenu.Main.Evade:Value() or GameTimer() < 5 then return end
+	self:Marco(nil)
 	self.DoD = self.JEMenu.Main.DD:Value() == true
 	self.BoundingRadius = myHero.boundingRadius or 65
 	self.MargemSeguranca = (self.JEMenu.Position.SafeMargin
@@ -6898,10 +7701,14 @@ function DEvade:Tick()
 	if not (myHero.pathing and myHero.pathing.isDashing) then
 		self._alturaNoChao = myHero.pos.y
 	end
+	self:Marco("01a leitura de menu e posicao")
 	if myHero.dead then return end
 	self:UpdateCombatState()
+	self:Marco("01b estado de combate")
 	pcall(function() self:RegistrarOndeLevouCC() end)
+	self:Marco("01c onde levou cc")
 	self:ConsumirArmadilhasPisadas()
+	self:Marco("01d armadilhas pisadas")
 	pcall(function() self:MedirAtraso() end)
 	if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()
 		and not self._slotsDespejados and GameTimer() > 10 then
@@ -6940,6 +7747,7 @@ function DEvade:Tick()
 			end
 		end)
 	end
+	self:Marco("02 descoberta de spells")
 	if self:SelfTestOn() then
 		local meu = myHero.activeSpell
 		if meu and meu.valid and meu.name then
@@ -6979,6 +7787,7 @@ function DEvade:Tick()
 			end
 		end
 	end
+	self:Marco("03 self-test e cast proprio")
 	pcall(function()
 		local meu = myHero.activeSpell
 		if meu and meu.valid and meu.name and not tostring(meu.name):find("ttack", 1, true) then
@@ -7220,8 +8029,10 @@ function DEvade:Tick()
 			end
 		end)
 	end
+	self:Marco("04 vigias (fizz, pouso, tubarao)")
 	self:ScanGroundHazards()
 	self:CheckStasisTriggers()
+	self:Marco("05 chao e stasis")
 	if self.JEMenu.Keys and self.JEMenu.Keys.KTest and self.JEMenu.Keys.KTest:Value() then
 		if not self._testeTeclas then
 			self._testeTeclas = true
@@ -7234,21 +8045,32 @@ function DEvade:Tick()
 		self._testeTeclas = false
 	end
 	pcall(function() self:AmostrarPosicoes() end)
+	self:Marco("06 ktest e amostras")
 	self:ComRegistro("buff zones", function() self:AtualizarZonasPorBuff() end)
 	self:ComRegistro("kegs", function() self:ApagarBarrilExplodido() end)
+	self:ComRegistro("substituidas", function() self:ApagarZonaSubstituida() end)
+	self:ComRegistro("fendas", function() self:AtualizarFendas() end)
+	self:ComRegistro("estouro preso", function() self:AtualizarEstourosPresos() end)
+	self:ComRegistro("golpe de objeto", function() self:AtualizarGolpesDeObjeto() end)
 	self:ComRegistro("dash watch", function() self:VigiarDashes() end)
 	self:ComRegistro("second strikes", function() self:AtualizarSegundosGolpes() end)
 	self:ComRegistro("anchored zones", function() self:AtualizarZonasPresas() end)
 	self:ComRegistro("damage samples", function() self:AtualizarAmostrasDeDano() end)
+	self:ComRegistro("queda de vida", function() self:AtualizarQuedaDeVida() end)
 	self:ComRegistro("object zones", function() self:AtualizarZonasPorObjeto() end)
 	self:ComRegistro("tracked missiles", function() self:AtualizarMisseisSeguidos() end)
 	self:ComRegistro("charges", function() self:AtualizarCargas() end)
+	self:Marco("07 etapas medidas")
 	pcall(function() self:ConferirOrdemDeMovimento() end)
+	self:Marco("08a ordem de movimento")
 	self:RegistrarBuffsNovos()
 	self:RegistrarCCNaoRemovivel()
+	self:Marco("08b buffs novos e cc")
 	self:CheckCleanse()
 	self:CheckDefensiveSummoners()
+	self:Marco("08c cleanse e summoners")
 	self:RunActivator()
+	self:Marco("08d ativador")
 	if not self.Evading then self:HoldInsideRing() end
 	if self:IsArena() then self:ExpandArenaUnits() end
 	local enemyCount = #self.Enemies
@@ -7296,6 +8118,7 @@ function DEvade:Tick()
 			end
 		end
 	end
+	self:Marco("09 laco de inimigos")
 	if self.JEMenu.Main.Missile:Value() then
 		local agoraMis = GameTimer()
 		if not self._limpezaMis or agoraMis - self._limpezaMis > 15 then
@@ -7344,6 +8167,97 @@ function DEvade:Tick()
 						self.SeenMissiles = self.SeenMissiles or {}
 						local mn = tostring(data.name)
 						do
+							do
+								if mn:find("Turret", 1, true) and not FeixesSemCampeao[mn]
+									and self.JEMenu.Debug.TrapDiscovery
+									and self.JEMenu.Debug.TrapDiscovery:Value() then
+									local vooD = (self:PosicaoValida(data.startPos)
+										and self:PosicaoValida(data.endPos))
+										and self:Distance(self:To2D(data.startPos), self:To2D(data.endPos)) or 0
+									self:LogUmaVez("torretadesc:" .. mn, string.format(
+										"UNKNOWN TURRET MISSILE: %q travelled %d units -- "
+										.. "not in the table, so it draws nothing yet",
+										mn, MathFloor(vooD)))
+								end
+								local fx = FeixesSemCampeao[mn]
+								if fx and mis.networkID
+									and self:PosicaoValida(data.startPos)
+									and self:PosicaoValida(data.endPos) then
+									self._feixeVisto = self._feixeVisto or {}
+									local chaveF = tostring(mis.networkID)
+									if not self._feixeVisto[chaveF] then
+										self._feixeVisto[chaveF] = true
+										local sF = self:To2D(data.startPos)
+										local alvoF = self:To2D(data.endPos)
+										local vooF = self:Distance(sF, alvoF)
+										local eF = alvoF
+										if vooF > 1 and (fx.alcance or 0) > vooF then
+											eF = Point2D(
+												sF.x + (alvoF.x - sF.x) / vooF * fx.alcance,
+												sF.y + (alvoF.y - sF.y) / vooF * fx.alcance)
+										end
+										local comprF = self:Distance(sF, eF)
+										if self.JEMenu.Debug.TrapDiscovery
+											and self.JEMenu.Debug.TrapDiscovery:Value() then
+											self:Log(string.format(
+												"TURRET SHOT: %s travelled %d units (zone from %d up)",
+												mn, MathFloor(vooF), MathFloor(fx.vooMinimo or 0)))
+										end
+										local minha = false
+										if vooF >= (fx.vooMinimo or 0) then
+											local timeF = self:TimeDaTorreta(fx.donoCharName, sF)
+											minha = timeF ~= nil and myHero ~= nil
+												and timeF == myHero.team and not self:SelfTestOn()
+											if timeF ~= nil and myHero ~= nil and timeF == myHero.team
+												and self.JEMenu.Debug.TrapDiscovery
+												and self.JEMenu.Debug.TrapDiscovery:Value() then
+												self:LogComIntervalo("feixemeu:" .. mn, 3, string.format(
+													"MY OWN TURRET: %s | %s", tostring(fx.displayName),
+													self:SelfTestOn()
+														and "drawn anyway because Self-Test is on"
+														or "no corridor -- turn Self-Test on to see it"))
+											end
+										end
+										local emMim = false
+										if self.MyHeroPos and myHero then
+											emMim = self:Distance(alvoF, self.MyHeroPos)
+												<= ((myHero.boundingRadius or 65) + 40)
+										end
+										if emMim and self.JEMenu.Debug.TrapDiscovery
+											and self.JEMenu.Debug.TrapDiscovery:Value() then
+											self:LogComIntervalo("feixeeu:" .. mn, 3, string.format(
+												"BEAM AIMED AT ME: %s | no corridor drawn -- "
+												.. "the line follows me wherever I walk",
+												tostring(fx.displayName)))
+										end
+										if vooF >= (fx.vooMinimo or 0) and not minha and not emMim then
+											local nomeF = tostring(fx.nome) .. ":" .. chaveF
+											local zonaF = {
+												type = "linear", radius = fx.radius, speed = fx.speed,
+												range = comprF, delay = 0, danger = fx.danger,
+												cc = fx.cc, displayName = fx.displayName,
+												slot = fx.slot, extend = false,
+												collision = fx.collision,
+												extraEndTime = fx.extraEndTime,
+											}
+											local pf1, pf2 = self:GetPaths(sF, eF, zonaF, nomeF)
+											if pf1 then
+												self:AddSpell(pf1, pf2, sF, eF, zonaF,
+													fx.speed, comprF, 0, fx.radius, nomeF)
+												if self.JEMenu.Debug.TrapDiscovery
+													and self.JEMenu.Debug.TrapDiscovery:Value() then
+													self:Log(string.format(
+														"TURRET BEAM: %s | corridor of %d over %d units "
+														.. "(target was at %d, the beam goes past it)",
+														tostring(fx.displayName),
+														MathFloor(fx.radius), MathFloor(comprF),
+														MathFloor(vooF)))
+												end
+											end
+										end
+									end
+								end
+							end
 							if not self._indiceSegue then
 								self._indiceSegue = {}
 								for _, entradas in pairs(SpellDatabase) do
@@ -7460,6 +8374,7 @@ function DEvade:Tick()
 			end
 		end
 	end
+	self:Marco("10 MISSEIS")
 	local dodgeableCount = #self.DodgeableSpells
 	if dodgeableCount > 0 then
 		if not self.Evading and self.EvadeSpellData and #self.EvadeSpellData > 0 then
@@ -7537,6 +8452,7 @@ function DEvade:Tick()
 		end
 		self:ResetEvadeState()
 	end
+	self:Marco("11 spells esquivaveis")
 	pcall(function() self:EscaparDeArmadilha() end)
 	pcall(function() self:DesviarDeArmadilhaNoCaminho() end)
 	if _G.GOS then
@@ -7572,6 +8488,7 @@ function DEvade:Tick()
 			end
 		end)
 	end
+	self:Marco("12 fim do tick")
 end
 function DEvade:EscaparDeArmadilha()
 	if self.Evading or #self.DodgeableSpells > 0 then return end
@@ -8566,6 +9483,34 @@ function DEvade:SpellManager(i, s)
 		if ok then
 			local antes = s._bloqueador
 			s._fimEfetivo, s._bloqueador = corte, quem
+			if s.raioImpacto and s.estouraSemAlvo and not quem and s.endPos and not s._estouroNoFim then
+				s._estouroNoFim = true
+				local nomeF = tostring(s.name) .. "Blast"
+				local vooF = 0
+				if s.speed and s.speed ~= MathHuge and s.speed > 0 then
+					vooF = self:Distance(s.startPos, s.endPos) / s.speed
+				end
+				local restanteF = MathMax(0, (s.delay or 0) + vooF
+					- (GameTimer() - (s.startTime or GameTimer())))
+				local zonaF = {
+					type = "circular", radius = s.raioImpacto, danger = s.danger, cc = s.cc,
+					casterTeam = s.casterTeam, casterId = s.casterId,
+					collision = false, windwall = false, extraEndTime = 0.3,
+				}
+				local f1, f2 = self:GetPaths(s.endPos, s.endPos, zonaF, nomeF)
+				if f1 then
+					self:SpellExistsThenRemove(nomeF)
+					self:AddSpell(f1, f2, s.endPos, s.endPos, zonaF, MathHuge, 0,
+						restanteF, s.raioImpacto, nomeF)
+					if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+						self:Log(string.format(
+							"END BLAST: %s | circle of %d at the end of the path, landing in %.2fs "
+							.. "-- nothing was in the way",
+							nomeF, MathFloor(s.raioImpacto), restanteF))
+					end
+				end
+			end
+			if s.raioImpacto and quem then s._estouroNoFim = false end
 			if s.raioImpacto and quem and antes ~= quem and corte then
 				local nomeB = tostring(s.name) .. "Blast"
 				local voo = 0
@@ -9012,7 +9957,39 @@ function DEvade:Avoid(spell, dodgePos, data)
 	end
 	return 0
 end
+function DEvade:DesenharTentaculos()
+	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	local agora = GameTimer()
+	local vivo = DrawColor(220, 80, 255, 140)
+	local memoria = DrawColor(140, 255, 190, 60)
+	pcall(function()
+		for id, u in pairs(self._objetosVistos or {}) do
+			if u and u.valid and u.pos then
+				local p = self:To3D(self:To2D(u.pos))
+				DrawCircle(p, 90, 3, vivo)
+				DrawCircle(p, 130, 1, vivo)
+				DrawText("na API", 14, p.x and 0 or 0, 0, vivo)
+			end
+		end
+	end)
+	pcall(function()
+		for id, m in pairs(self._objetoLembrado or {}) do
+			local naApi = self._objetosVistos and self._objetosVistos[id]
+			naApi = naApi and naApi.valid
+			if m and m.pos and not naApi then
+				local p = self:To3D(m.pos)
+				DrawCircle(p, 90, 1, memoria)
+				DrawText(string.format("%.0fs sem API", agora - (m.visto or agora)), 13,
+					p.x, p.y, memoria)
+			end
+		end
+	end)
+end
 function DEvade:Draw()
+	local okTent, errTent = pcall(function() self:DesenharTentaculos() end)
+	if not okTent then
+		self:LogUmaVez("drawtent", "DRAW TENTACLES falhou: " .. tostring(errTent))
+	end
 	local okAviso, errAviso = pcall(function() self:DesenharAvisoDeTecla() end)
 	if not okAviso then
 		self:LogUmaVez("aviso:erro", "KEY WARNING failed to draw: " .. tostring(errAviso))
@@ -9504,7 +10481,37 @@ function DEvade:OnCreateMissile(unit, missile)
 					print("[superEvade] Missile created: ", name, " by ", unit.charName, " from:", missile.startPos.x, missile.startPos.y, "->", missile.endPos.x, missile.endPos.y)
 				end
 			end
-	if not name or string.find(name, "ttack", 1, true) or not SpellDatabase[unit.charName] then return end
+	if not name or not SpellDatabase[unit.charName] then return end
+	if string.find(name, "ttack", 1, true) then
+		if not self._misseisComAttack then
+			self._misseisComAttack = {}
+			for _, entradas in pairs(SpellDatabase) do
+				if type(entradas) == "table" then
+					for _, ee in pairs(entradas) do
+						if type(ee) == "table" and type(ee.missileName) == "string"
+							and string.find(ee.missileName, "ttack", 1, true) then
+							self._misseisComAttack[#self._misseisComAttack + 1] = ee.missileName
+						end
+					end
+				end
+			end
+		end
+		local declarado = false
+		for i = 1, #self._misseisComAttack do
+			if string.find(name, self._misseisComAttack[i], 1, true) then declarado = true break end
+		end
+		if not declarado then return end
+		self:LogUmaVez("attack:" .. tostring(name), string.format(
+			"NAMED LIKE AN ATTACK: %s carries \"ttack\" in its name but is a declared "
+			.. "spell missile -- kept instead of dropped with the basic attacks",
+			tostring(name)))
+	end
+	if string.find(name, "VisualOnly", 1, true) then
+		self:LogUmaVez("visual:" .. tostring(name), string.format(
+			"VISUAL ONLY: %s ignored -- it carries a real missile's name inside and would "
+			.. "have matched it by substring", tostring(name)))
+		return
+	end
 	if self.JEMenu.Core.LimitRange:Value() and self:Distance(self.MyHeroPos, unitPos)
 		> self.JEMenu.Core.LR:Value() then return end
 	local menuName, melhorTam = "", -1
@@ -9629,6 +10636,28 @@ function DEvade:OnCreateMissile(unit, missile)
 	end
 	if ehFow or not jaDetectada then
 		local startPos, placementPos = self:To2D(missile.startPos), self:To2D(missile.endPos)
+		if data.origemNoCaster and unit and unit.pos and startPos and placementPos then
+			pcall(function()
+				local dono = self:To2D(unit.pos)
+				local dx, dy = placementPos.x - startPos.x, placementPos.y - startPos.y
+				local comp = MathSqrt(dx * dx + dy * dy)
+				if dono and comp > 1 then
+					if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+						local ux, uy = dx / comp, dy / comp
+						local ax, ay = startPos.x - dono.x, startPos.y - dono.y
+						self:Log(string.format(
+							"FORMATION: %s | this missile is %d to the side of the caster "
+							.. "and %d ahead of him -- axis moved onto the caster, "
+							.. "half-width needs to cover the side offset",
+							tostring(menuName),
+							MathFloor(MathAbs(ax * -uy + ay * ux)),
+							MathFloor(ax * ux + ay * uy)))
+					end
+					placementPos = Point2D(dono.x + dx, dono.y + dy)
+					startPos = dono
+				end
+			end)
+		end
 		local endPos, range = self:CalculateEndPos(startPos, placementPos, startPos, data.speed, data.range, data.radius, data.collision, data.type, data.extend, data.casterTeam)
 		local antesParede = endPos
 		if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
@@ -9664,10 +10693,27 @@ function DEvade:OnCreateMissile(unit, missile)
 		self.NewTimer = GameTimer()
 	end
 end
+function DEvade:AnunciarInterruptores()
+	pcall(function()
+		local function estado(nome)
+			local m = self.JEMenu and self.JEMenu.Debug and self.JEMenu.Debug[nome]
+			if not m then return "ausente" end
+			return m:Value() and "ligado" or "DESLIGADO"
+		end
+		local fileLog = estado("FileLog")
+		EscreverLinha(string.format(
+			"[%7.1f] LOG SWITCHES: FileLog=%s TrapDiscovery=%s MissileLog=%s DamageLog=%s%s\n",
+			GameTimer(), fileLog, estado("TrapDiscovery"), estado("MissileLog"),
+			self._danoRegistro and "ligado" or "DESLIGADO",
+			(fileLog ~= "ligado")
+				and "  <<< NADA DE PARTIDA SERA GRAVADO ABAIXO DESTA LINHA" or ""))
+	end)
+end
 function OnLoad()
 	print("Loading superEvade...")
 	DelayAction(function()
 		DEvade:__init()
+		DEvade:AnunciarInterruptores()
 		if DEvade.JEMenu and DEvade.JEMenu.Main and DEvade.JEMenu.Debug.MissileLog and DEvade.JEMenu.Debug.MissileLog:Value() then
 			DEvade:PrintMissingFowMissiles()
 		end
