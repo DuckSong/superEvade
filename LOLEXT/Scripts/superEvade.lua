@@ -1,4 +1,4 @@
-local superEvadeVersion = "0.4.3"
+local superEvadeVersion = "0.5"
 local function MaisNova(a, b)
 	local pa, pb = {}, {}
 	for n in tostring(a):gmatch("%d+") do pa[#pa + 1] = tonumber(n) end
@@ -152,6 +152,47 @@ local SpellDatabase = {
 		["GlacialStorm"] = { displayName = "Glacial Storm", slot = _R, type = "circular", speed = MathHuge, range = 625, delay = 0.25, radius = 400, danger = 1, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
 		["FlashFrostSpell"] = { displayName = "Flash Frost", missileName = "FlashFrostSpell", missilVivo = "FlashFrostSpell", slot = _Q, type = "linear", speed = 950, range = 1100, delay = 0.25, radius = 110, danger = 2, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 	},
+	["Jade_Amumu"] = {
+		["Jade_AmumuBandageToss"] = { displayName = "Bandage Toss", missileName = "Jade_AmumuSadMummyBandageToss", slot = _Q, type = "linear", speed = 2000, range = 1100, delay = 0.25, radius = 80, danger = 3, cc = true, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_AmumuCurseoftheSadMummy"] = { displayName = "Curse of the Sad Mummy", slot = _R, type = "circular", speed = MathHuge, range = 0, delay = 0.25, radius = 550, danger = 5, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Alistar"] = {
+		["Jade_AlistarQ"] = { displayName = "Pulverize", slot = _Q, type = "circular", speed = MathHuge, range = 0, delay = 0.25, radius = 365, danger = 2, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Annie"] = {
+		["Jade_AnnieW"] = { displayName = "Incinerate", slot = _W, type = "conic", speed = MathHuge, range = 630, delay = 0.25, radius = 0, angle = 52.5, danger = 2, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
+		["Jade_AnnieR"] = { displayName = "Summon: Tibbers", slot = _R, type = "circular", speed = MathHuge, range = 600, delay = 0.25, radius = 290, danger = 5, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Ashe"] = {
+		["Jade_AsheVolley"] = { displayName = "Volley", missileName = "Jade_AsheVolleyAttack", slot = _W, type = "conic", speed = 902, range = 1200, delay = 0.25, radius = 20, angle = 45, projeteis = 7, danger = 2, cc = true, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_AsheEnchantedCrystalArrow"] = { displayName = "Enchanted Crystal Arrow", missileName = "Jade_AsheEnchantedCrystalArrow", slot = _R, type = "linear", speed = 1600, range = 25000, delay = 0.25, radius = 130, danger = 4, cc = true, collision = "campeao", windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
+	["Jade_Blitzcrank"] = {
+		["Jade_BlitzcrankRocketGrab"] = { displayName = "Rocket Grab", missileName = "Jade_BlitzcrankRocketGrabMissile", slot = _Q, type = "linear", speed = 1800, range = 1079, delay = 0.25, radius = 70, danger = 3, cc = true, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_BlitzcrankStaticField"] = { displayName = "Static Field", slot = _R, type = "circular", speed = MathHuge, range = 0, delay = 0.25, extraEndTime = 0.35, radius = 600, danger = 3, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Chogath"] = {
+		["Jade_ChogathQ"] = { displayName = "Rupture", slot = _Q, type = "circular", speed = MathHuge, range = 950, delay = 1.2, radius = 250, danger = 2, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+		["Jade_ChogathW"] = { displayName = "Feral Scream", slot = _W, type = "conic", speed = MathHuge, range = 650, delay = 0.5, radius = 0, angle = 56, danger = 2, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
+	},
+	["Jade_DrMundo"] = {
+		["Jade_DrMundoQ"] = { displayName = "Infected Bonesaw", missileName = "Jade_DrMundoQ_Missile", slot = _Q, type = "linear", speed = 2000, range = 1080, delay = 0.25, radius = 100, danger = 2, cc = true, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
+	["Jade_Evelynn"] = {
+		["Jade_EvelynnR"] = { displayName = "Agony's Embrace", slot = _R, type = "circular", speed = MathHuge, range = 570, delay = 0.35, radius = 350, danger = 5, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Anivia"] = {
+		["Jade_AniviaFlashFrostSpell"] = { displayName = "Flash Frost", missileName = "Jade_AniviaFlashFrostSpell", missilVivo = "Jade_AniviaFlashFrostSpell", slot = _Q, type = "linear", speed = 850, range = 1100, delay = 0.25, radius = 110, danger = 2, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_AniviaGlacialStorm"] = { displayName = "Glacial Storm", slot = _R, type = "circular", speed = MathHuge, range = 625, delay = 0.25, radius = 400, danger = 1, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Akali"] = {
+		["Jade_AkaliE"] = { displayName = "Crescent Slash", slot = _E, type = "circular", speed = MathHuge, range = 0, delay = 0.25, radius = 325, danger = 2, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Ahri"] = {
+		["Jade_AhriQ"] = { missileName = "Jade_AhriQ_Missile", displayName = "Orb of Deception", slot = _Q, type = "linear", speed = 1100, range = 880, delay = 0.25, radius = 100, danger = 2, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_AhriQVolta"] = { displayName = "Orb of Deception [volta]", slot = _Q, type = "linear", speed = MathHuge, range = 0, delay = 0, radius = 100, danger = 2, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = true, extend = false},
+		["Jade_AhriE"] = { displayName = "Seduce", missileName = "Jade_AhriE_Missile", slot = _E, type = "linear", speed = 1200, range = 975, delay = 0.25, radius = 60, danger = 4, cc = true, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
 	["Annie"] = {
 		["AnnieW"] = { displayName = "Incinerate", missileName = "AnnieW", slot = _W, type = "conic", speed = MathHuge, range = 600, delay = 0.25, radius = 0, angle = 50, danger = 2, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
 		["AnnieQ"] = { displayName = "Disintegrate", missileName = "AnnieQ", slot = _Q, type = "linear", speed = 1700, range = 625, delay = 0.25, radius = 65, danger = 1, cc = false, collision = false, windwall = true, hitbox = true, fow = false, exception = true, extend = true},
@@ -164,7 +205,7 @@ local SpellDatabase = {
 	},
 	["Ashe"] = {
 	["Volley"] = { displayName = "Volley", missileName = "VolleyAttack", slot = _W, type = "conic", speed = 2000, range = 1200, delay = 0.25, radius = 20, angle = 50, projeteis = 11, danger = 2, cc = true, collision = true, windwall = true, hitbox = false, fow = true, exception = false, extend = true},
-		["EnchantedCrystalArrow"] = { displayName = "Enchanted Crystal Arrow", missileName = "EnchantedCrystalArrow", slot = _R, type = "linear", speed = 1600, range = 25000, delay = 0.25, radius = 130, danger = 4, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["EnchantedCrystalArrow"] = { displayName = "Enchanted Crystal Arrow", missileName = "EnchantedCrystalArrow", slot = _R, type = "linear", speed = 1600, range = 25000, delay = 0.25, radius = 130, danger = 4, cc = true, collision = "campeao", windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 	},
 	["AurelionSol"] = {
 	["AurelionSolE"] = { displayName = "Singularity", missileName = "AurelionSolE", slot = _E, type = "circular", speed = MathHuge, range = 800, delay = 0.5, extraEndTime = 5, radius = 450, danger = 3, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
@@ -1387,6 +1428,34 @@ local ZonasPorBuff = {
 		displayName = "Aura of Despair", slot = _W, tipo = "circular",
 		danger = 1, radius = 300, alcancePadrao = 0,
 	},
+	["glacialstorm"] = {
+		charName = "Anivia", nome = "GlacialStorm",
+		displayName = "Glacial Storm", slot = _R, tipo = "circular",
+		danger = 1, radius = 420, alcancePadrao = 0, raioProprio = true,
+		particula = "anivia_.-_r_aoe",
+		dangerComParticula = 3,
+		soComParticula = true,
+	},
+	["jade_aniviaglacialstorm"] = {
+		charName = "Jade_Anivia", nome = "Jade_AniviaGlacialStorm",
+		displayName = "Glacial Storm", slot = _R, tipo = "circular",
+		danger = 1, radius = 420, alcancePadrao = 0, raioProprio = true,
+		particula = "anivia_.-_r_.-aoe",
+		dangerComParticula = 3,
+		soComParticula = true,
+	},
+	["jade_drmundow"] = {
+		charName = "Jade_DrMundo", nome = "Jade_DrMundoW",
+		displayName = "Heart Zapper", slot = _W, tipo = "circular",
+		danger = 1, radius = 325, alcancePadrao = 0,
+		auraDeLuta = true,
+	},
+	["jade_amumuauraofdespair"] = {
+		charName = "Jade_Amumu", nome = "Jade_AmumuAuraofDespair",
+		displayName = "Aura of Despair", slot = _W, tipo = "circular",
+		danger = 1, radius = 300, alcancePadrao = 0,
+		auraDeLuta = true,
+	},
 	["aurelionsolq"] = {
 		charName = "AurelionSol", nome = "AurelionSolQ",
 		displayName = "Breath of Light", slot = _Q, tipo = "linear",
@@ -1431,6 +1500,11 @@ local MisseisSeguidos = {
 		charName = "Anivia", nome = "FlashFrostSpell", radius = 110, danger = 3,
 		cc = true, alvoCaster = false, forma = "corredor",
 		tambem = { nome = "FlashFrostBlast", radius = 200, danger = 3 },
+	},
+	["Jade_AniviaFlashFrostSpell"] = {
+		charName = "Jade_Anivia", nome = "Jade_AniviaFlashFrostSpell", radius = 110, danger = 3,
+		cc = true, alvoCaster = false, forma = "corredor",
+		tambem = { nome = "Jade_AniviaFlashFrostBlast", radius = 200, danger = 3 },
 	},
 	["AuroraQReturnMissile"] = {
 		charName = "Aurora", nome = "AuroraQVolta", radius = 150, danger = 2,
@@ -1484,6 +1558,15 @@ local MisseisSeguidos = {
 	["AhriQReturnMissile"] = {
 		charName = "Ahri", nome = "AhriQVolta", radius = 100, danger = 2,
 		cc = false, alvoCaster = true, forma = "linear",
+	},
+	["Jade_AhriQ_Missile"] = {
+		charName = "Jade_Ahri", nome = "Jade_AhriQOrbe", radius = 100, danger = 2,
+		cc = false, alvoCaster = false, forma = "circular",
+	},
+	["Jade_AhriQ_Return"] = {
+		charName = "Jade_Ahri", nome = "Jade_AhriQVolta", radius = 100, danger = 2,
+		cc = false, alvoCaster = true, forma = "linear",
+		tambem = { nome = "Jade_AhriQVoltaOrbe", radius = 100, danger = 2 },
 	},
 	["DianaQOuterMissile"] = {
 		charName = "Diana", nome = "DianaQVoo", radius = 60, danger = 2,
@@ -2677,6 +2760,11 @@ function DEvade:DespejarBuffs(motivo)
 	self:Log(string.format("BUFFS [%s]: %s", tostring(motivo),
 		#partes > 0 and table.concat(partes, ", ") or "none"))
 end
+local RAIO_VIZINHOS = 1200
+local PerigoPorVizinhos = {
+	["Jade_AlistarQ"] = true,
+	["Jade_ChogathQ"] = true,
+}
 local PerigoCondicional = {
 	["BrandQ"] = { buff = "brandablaze", danger = 4, cc = true },
 }
@@ -3393,6 +3481,30 @@ function DEvade:AtualizarZonasPorBuff()
 						local sd = unit:GetSpellData(info.slot)
 						if not info.alcanceFixo and sd and sd.range and sd.range > 0 then alcance = sd.range end
 						local sP = self:To2D(unit.pos)
+						local perigoAgora = info.danger
+						if info.particula then
+							local pp = self:PosicaoDaParticula(info.particula)
+							if pp then
+								sP = pp
+								perigoAgora = info.dangerComParticula or info.danger
+								self:LogComIntervalo("part:" .. chave, 10, string.format(
+									"PARTICLE ANCHOR: %s | centro na particula %q, a %d do campeao "
+									.. "-- perigo %d em vez de %d", tostring(info.nome),
+									info.particula, MathFloor(self:Distance(pp, self:To2D(unit.pos))),
+									perigoAgora, info.danger))
+							elseif info.soComParticula then
+								self:LogComIntervalo("partsem:" .. chave, 10, string.format(
+									"PARTICLE ANCHOR: %s | particula %q nao encontrada -- e esta "
+									.. "entrada so desenha com o ponto certo, entao nao desenha",
+									tostring(info.nome), info.particula))
+								return
+							else
+								self:LogComIntervalo("partsem:" .. chave, 10, string.format(
+									"PARTICLE ANCHOR: %s | particula %q nao encontrada -- centro no "
+									.. "campeao e perigo %d, como antes", tostring(info.nome),
+									info.particula, info.danger))
+							end
+						end
 						local destinoDoSalto
 						if info.porDash then
 							local velocidade
@@ -3580,7 +3692,7 @@ function DEvade:AtualizarZonasPorBuff()
 							radius = raioZona,
 							speed = MathHuge, range = alcance,
 							delay = restante, extraEndTime = 0,
-							danger = info.danger, cc = false, casterTeam = unit.team,
+							danger = perigoAgora or info.danger, cc = false, casterTeam = unit.team,
 							collision = false, windwall = false, porTick = true,
 							ring = info.ring, radius2 = info.radius2,
 							auraDeLuta = info.auraDeLuta,
@@ -4637,24 +4749,89 @@ function DEvade:PosicaoPassada(unit, segundos)
 	if not melhor or dif > 0.5 then return nil end
 	return melhor.pos
 end
+function DEvade:PosicaoDaParticula(fragmento)
+	if not fragmento then return nil end
+	local agora = GameTimer()
+	self._partPos = self._partPos or {}
+	local cache = self._partPos[fragmento]
+	if cache and (agora - cache.t) < 0.2 then return cache.p end
+	local achada
+	pcall(function()
+		local n = Game.ParticleCount and Game.ParticleCount() or 0
+		for i = 1, n do
+			local o = Game.Particle(i)
+			local nome = o and o.name and tostring(o.name):lower()
+			if nome and nome:find(fragmento) and o.pos then
+				achada = self:To2D(o.pos)
+				break
+			end
+		end
+	end)
+	self._partPos[fragmento] = { t = agora, p = achada }
+	return achada
+end
+function DEvade:DescobrirParticulas()
+	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	local agora = GameTimer()
+	if self._partT and (agora - self._partT) < 0.5 then return end
+	self._partT = agora
+	pcall(function()
+		self._partVistas = self._partVistas or {}
+		self._partN = self._partN or 0
+		if self._partN > 200 then return end
+		local n = Game.ParticleCount and Game.ParticleCount() or 0
+		for i = 1, n do
+			local o = Game.Particle(i)
+			local nome = o and o.name and tostring(o.name)
+			if nome and nome ~= "" and not self._partVistas[nome] then
+				local d = -1
+				pcall(function()
+					if o.pos then d = self:Distance(self:To2D(o.pos), self.MyHeroPos) end
+				end)
+				if d >= 0 and d < 2000 then
+					self._partVistas[nome] = true
+					self._partN = self._partN + 1
+					self:Log(string.format("PARTICLE: %q | type=%s | %d de mim",
+						nome, tostring(o.type), MathFloor(d)))
+				end
+			end
+		end
+	end)
+end
 function DEvade:RegistrarBuffsNovos()
 	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
 	local agora = GameTimer()
 	if self._buffNovoT and (agora - self._buffNovoT) < 0.25 then return end
 	self._buffNovoT = agora
+	local vistosAgora = {}
 	pcall(function()
 		for i = 0, (myHero.buffCount or 0) do
 			local b = myHero:GetBuff(i)
 			if b and b.count and b.count > 0 and b.name and b.name ~= "" then
 				self._buffsVistos = self._buffsVistos or {}
+				self._buffDesde = self._buffDesde or {}
 				local nm = tostring(b.name)
+				vistosAgora[nm] = true
 				if not self._buffsVistos[nm] then
 					self._buffsVistos[nm] = true
+					self._buffDesde[nm] = agora
 					self:Log(string.format("NEW BUFF: %q | type=%s | lasts %.2fs",
 						nm, tostring(b.type), (b.expireTime or 0) - GameTimer()))
 				end
 			end
 		end
+		self._buffPresente = self._buffPresente or {}
+		self._buffSumido = self._buffSumido or {}
+		for nm in pairs(self._buffPresente) do
+			if not vistosAgora[nm] and not self._buffSumido[nm] then
+				self._buffSumido[nm] = true
+				local desde = (self._buffDesde or {})[nm]
+				self:Log(string.format("BUFF GONE: %q | durou %s -- prova de que ele e "
+					.. "alternavel ou temporario, e nao permanente", nm,
+					desde and string.format("%.2fs", agora - desde) or "?"))
+			end
+		end
+		self._buffPresente = vistosAgora
 	end)
 end
 function DEvade:RegistrarRecast(unit, name)
@@ -4830,6 +5007,27 @@ function DEvade:MedirAtraso()
 end
 function DEvade:FolgaDeTempo()
 	return self.AtrasoMedido or (self:PingReal() / 2000 + 0.05)
+end
+function DEvade:MissilDeclarado(nome)
+	if not nome then return true end
+	if not self._misseisDeclarados then
+		self._misseisDeclarados = {}
+		pcall(function()
+			for _, entradas in pairs(SpellDatabase) do
+				if type(entradas) == "table" then
+					for chave, ee in pairs(entradas) do
+						if type(ee) == "table" and ee.missileName then
+							self._misseisDeclarados[tostring(ee.missileName)] = true
+						end
+						if type(chave) == "string" then
+							self._misseisDeclarados[chave] = true
+						end
+					end
+				end
+			end
+		end)
+	end
+	return self._misseisDeclarados[tostring(nome)] == true
 end
 function DEvade:PingReal()
 	local ms
@@ -5915,6 +6113,14 @@ function DEvade:GetIncomingDamage(unit, slot)
 	if nosso and nosso > 0 then return nosso end
 	local ok, dmg = pcall(function() return getdmg(letra, myHero, unit) end)
 	if not ok or type(dmg) ~= "number" then dmg = 0 end
+	if dmg > 10000 then
+		self:LogUmaVez("danoabsurdo:" .. tostring(unit.charName) .. letra, string.format(
+			"IMPLAUSIBLE DAMAGE: %s %s returns %d -- above the ceiling of 10000, so it is "
+			.. "treated as unknown. A corrupted DamageLib entry would make everything look "
+			.. "lethal and burn Zhonya's/Barrier/Flash on nothing",
+			tostring(unit.charName), letra, MathFloor(dmg)))
+		dmg = 0
+	end
 	self:RegistrarDanoAusente(unit, letra, dmg)
 	return dmg
 end
@@ -7272,6 +7478,19 @@ function DEvade:GetDodgeableSpells()
 	for i = detectedCount, 1, -1 do
 		local s = self.DetectedSpells[i]
 		self:SpellManager(i, s)
+		if PerigoPorVizinhos[s.name] then
+			s._perigoBaseViz = s._perigoBaseViz or s.danger
+			local perto = self:ContarInimigos(RAIO_VIZINHOS)
+			local novo = (perto >= 3 and 5) or (perto == 2 and 3) or (perto == 1 and 2)
+				or s._perigoBaseViz
+			if novo ~= s.danger then
+				self:LogComIntervalo("viz:" .. tostring(s.name), 5, string.format(
+					"CROWD DANGER: %s vira %d -- %d inimigo(s) a menos de %d. Arremesso nao "
+					.. "machuca sozinho; o que machuca e quem alcanca voce enquanto ele dura",
+					tostring(s.name), novo, perto, RAIO_VIZINHOS))
+			end
+			s.danger = novo
+		end
 		local pc = PerigoCondicional[s.name]
 		if pc then
 			s._perigoBase = s._perigoBase or s.danger
@@ -8047,6 +8266,7 @@ function DEvade:Tick()
 	pcall(function() self:AmostrarPosicoes() end)
 	self:Marco("06 ktest e amostras")
 	self:ComRegistro("buff zones", function() self:AtualizarZonasPorBuff() end)
+	self:ComRegistro("particulas", function() self:DescobrirParticulas() end)
 	self:ComRegistro("kegs", function() self:ApagarBarrilExplodido() end)
 	self:ComRegistro("substituidas", function() self:ApagarZonaSubstituida() end)
 	self:ComRegistro("fendas", function() self:AtualizarFendas() end)
@@ -8326,7 +8546,8 @@ function DEvade:Tick()
 								grupo.distMin = grupo.distMin and MathMin(grupo.distMin, dist) or dist
 								grupo.distMax = grupo.distMax and MathMax(grupo.distMax, dist) or dist
 							end
-							if n <= 6 then
+							local teto = self:MissilDeclarado(mn) and 6 or 60
+							if n <= teto then
 								local ep = data.endPos
 								local mp = mis.pos
 								self:Log(string.format("MISSILE #%d: %q | at=(%s,%s) | target=(%s,%s)", n, mn,
@@ -9985,11 +10206,23 @@ function DEvade:DesenharTentaculos()
 		end
 	end)
 end
+function DEvade:DesenharReguaDeRaio()
+	if not (self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value()) then return end
+	pcall(function()
+		local sd = myHero:GetSpellData(_R)
+		local nome = sd and sd.name and tostring(sd.name)
+		local banco = nome and SpellDatabase[tostring(myHero.charName)]
+		local e = banco and banco[nome]
+		if not e or not e.radius or e.radius <= 0 then return end
+		DrawCircle(myHero.pos, e.radius, 3, DrawColor(255, 120, 255, 120))
+	end)
+end
 function DEvade:Draw()
 	local okTent, errTent = pcall(function() self:DesenharTentaculos() end)
 	if not okTent then
 		self:LogUmaVez("drawtent", "DRAW TENTACLES falhou: " .. tostring(errTent))
 	end
+	pcall(function() self:DesenharReguaDeRaio() end)
 	local okAviso, errAviso = pcall(function() self:DesenharAvisoDeTecla() end)
 	if not okAviso then
 		self:LogUmaVez("aviso:erro", "KEY WARNING failed to draw: " .. tostring(errAviso))
@@ -10693,6 +10926,45 @@ function DEvade:OnCreateMissile(unit, missile)
 		self.NewTimer = GameTimer()
 	end
 end
+function DEvade:ReconhecerModo()
+	if self._modoDito then return end
+	self._modoDito = true
+	pcall(function()
+		local prefixados, exemplo = 0, nil
+		for i = 1, GameHeroCount() do
+			local h = GameHero(i)
+			local cn = h and h.charName and tostring(h.charName)
+			if cn and cn:sub(1, 5) == "Jade_" then
+				prefixados = prefixados + 1
+				exemplo = exemplo or cn
+			end
+		end
+		local selo = false
+		pcall(function()
+			for b = 0, (myHero.buffCount or 0) do
+				local buff = myHero:GetBuff(b)
+				if buff and buff.name and tostring(buff.name):find("Classic", 1, true) then
+					selo = true
+					break
+				end
+			end
+		end)
+		if prefixados > 0 or selo then
+			self._modo = "classic"
+			self:Log(string.format(
+				"GAME MODE: LoL Classic -- %d campeao(oes) com prefixo Jade_%s | selo do modo "
+				.. "no buff: %s | mapa %s",
+				prefixados, exemplo and (" (ex: " .. tostring(exemplo) .. ")") or "",
+				selo and "sim" or "nao", tostring(DETECTED_MAP_ID)))
+			return
+		end
+		self._modo = "normal"
+		self:LogUmaVez("modonormal", string.format(
+			"GAME MODE: nenhum campeao com prefixo Jade_ -- nao e LoL Classic. Mapa %s. "
+			.. "O jogo nao expoe modo, entao esta e toda a certeza disponivel",
+			tostring(DETECTED_MAP_ID)))
+	end)
+end
 function DEvade:AnunciarInterruptores()
 	pcall(function()
 		local function estado(nome)
@@ -10714,6 +10986,7 @@ function OnLoad()
 	DelayAction(function()
 		DEvade:__init()
 		DEvade:AnunciarInterruptores()
+		DEvade:ReconhecerModo()
 		if DEvade.JEMenu and DEvade.JEMenu.Main and DEvade.JEMenu.Debug.MissileLog and DEvade.JEMenu.Debug.MissileLog:Value() then
 			DEvade:PrintMissingFowMissiles()
 		end
