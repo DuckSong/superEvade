@@ -1,4 +1,4 @@
-local superEvadeVersion = "0.5"
+local superEvadeVersion = "0.5.1"
 local function MaisNova(a, b)
 	local pa, pb = {}, {}
 	for n in tostring(a):gmatch("%d+") do pa[#pa + 1] = tonumber(n) end
@@ -180,6 +180,39 @@ local SpellDatabase = {
 	},
 	["Jade_Evelynn"] = {
 		["Jade_EvelynnR"] = { displayName = "Agony's Embrace", slot = _R, type = "circular", speed = MathHuge, range = 570, delay = 0.35, radius = 350, danger = 5, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Ezreal"] = {
+		["Jade_EzrealQ"] = { displayName = "Mystic Shot", missileName = "Jade_EzrealQ", slot = _Q, type = "linear", speed = 2000, velocidadeFixa = true, range = 1150, delay = 0.25, radius = 60, danger = 1, cc = false, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_EzrealW"] = { displayName = "Essence Flux", missileName = "Jade_EzrealW", slot = _W, type = "linear", speed = 1200, range = 1050, delay = 0.25, radius = 100, danger = 1, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_EzrealR"] = { displayName = "Trueshot Barrage", missileName = "Jade_EzrealR", slot = _R, type = "linear", speed = 2000, range = 25000, delay = 1, radius = 160, danger = 4, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
+	["Jade_LeeSin"] = {
+		["Jade_LeeSinQOne"] = { displayName = "Sonic Wave", missileName = "Jade_LeeSinQOne", slot = _Q, type = "linear", speed = 1800, range = 1100, delay = 0.25, radius = 60, danger = 2, cc = false, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
+	["Jade_KogMaw"] = {
+		["Jade_KogMawR"] = { displayName = "Living Artillery", slot = _R, type = "circular", speed = MathHuge, range = 1300, delay = 1.1, radius = 250, danger = 1, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+		["Jade_KogMawEMissile"] = { displayName = "Void Ooze", missileName = "Jade_KogMawEMissile", slot = _E, type = "linear", speed = 1400, range = 1360, delay = 0.25, radius = 120, danger = 2, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
+	["Jade_Kennen"] = {
+		["Jade_KennenQ"] = { displayName = "Shuriken Hurl", missileName = "Jade_KennenQ", slot = _Q, type = "linear", speed = 1700, range = 1050, delay = 0.175, radius = 50, danger = 2, cc = false, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = false},
+	},
+	["Jade_Kassadin"] = {
+		["Jade_KassadinE"] = { displayName = "Force Pulse", slot = _E, type = "conic", speed = MathHuge, range = 600, delay = 0.25, radius = 0, angle = 80, danger = 2, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = true},
+		["Jade_KassadinR"] = { displayName = "Rift Walk", slot = _R, type = "circular", speed = MathHuge, range = 500, delay = 0.25, radius = 280, danger = 3, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Karthus"] = {
+		["Jade_KarthusLayWaste"] = { displayName = "Lay Waste", slot = _Q, type = "circular", speed = MathHuge, range = 875, delay = 0.9, radius = 175, danger = 1, cc = false, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+	},
+	["Jade_Jax"] = {
+	},
+	["Jade_Garen"] = {
+	},
+	["Jade_Gragas"] = {
+		["Jade_GragasQ"] = { displayName = "Barrel Roll", missileName = "Jade_GragasQ_Missile", slot = _Q, type = "circular", speed = 1000, range = 850, delay = 0.25, extraEndTime = 4.25, radius = 275, danger = 2, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+		["Jade_GragasR"] = { displayName = "Explosive Cask", missileName = "Jade_GragasR_Boom", slot = _R, type = "circular", speed = 1800, range = 1000, delay = 0.25, radius = 400, danger = 5, cc = true, collision = false, windwall = true, hitbox = false, fow = true, exception = false, extend = false},
+	},
+	["Jade_Gangplank"] = {
+		["Jade_GangplankR"] = { displayName = "Cannon Barrage", missileName = "Jade_GangplankR", slot = _R, type = "circular", speed = MathHuge, range = 20000, delay = 0.5, extraEndTime = 8.0, radius = 600, poca = true, danger = 3, cc = false, collision = false, windwall = false, hitbox = false, fow = true, exception = false, extend = false},
 	},
 	["Jade_Anivia"] = {
 		["Jade_AniviaFlashFrostSpell"] = { displayName = "Flash Frost", missileName = "Jade_AniviaFlashFrostSpell", missilVivo = "Jade_AniviaFlashFrostSpell", slot = _Q, type = "linear", speed = 850, range = 1100, delay = 0.25, radius = 110, danger = 2, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
@@ -1412,6 +1445,7 @@ local ZonasPorBuff = {
 		charName = "DrMundo", nome = "DrMundoW",
 		displayName = "Heart Zapper", slot = _W, tipo = "circular",
 		danger = 1, radius = 325, alcancePadrao = 0,
+		auraDeLuta = true,
 	},
 	["fiddlesticksr"] = {
 		charName = "FiddleSticks", nome = "FiddleSticksR",
@@ -1427,6 +1461,7 @@ local ZonasPorBuff = {
 		charName = "Amumu", nome = "AuraofDespair",
 		displayName = "Aura of Despair", slot = _W, tipo = "circular",
 		danger = 1, radius = 300, alcancePadrao = 0,
+		auraDeLuta = true,
 	},
 	["glacialstorm"] = {
 		charName = "Anivia", nome = "GlacialStorm",
@@ -1443,6 +1478,39 @@ local ZonasPorBuff = {
 		particula = "anivia_.-_r_.-aoe",
 		dangerComParticula = 3,
 		soComParticula = true,
+	},
+	["jade_kennenr"] = {
+		charName = "Jade_Kennen", nome = "Jade_KennenR",
+		displayName = "Slicing Maelstrom", slot = _R, tipo = "circular",
+		danger = 4, radius = 600,
+		alcancePadrao = 0, raioProprio = true,
+	},
+	["jade_kennene"] = {
+		charName = "Jade_Kennen", nome = "Jade_KennenE",
+		displayName = "Lightning Rush", slot = _E, tipo = "circular",
+		danger = 2, radius = 180,
+		alcancePadrao = 0, raioProprio = true,
+		auraDeLuta = true,
+	},
+	["jade_karthusdefile"] = {
+		charName = "Jade_Karthus", nome = "Jade_KarthusDefile",
+		displayName = "Defile", slot = _E, tipo = "circular",
+		danger = 1, radius = 550, poca = true,
+		alcancePadrao = 0, raioProprio = true,
+		auraDeLuta = true,
+	},
+	["jade_jaxe"] = {
+		charName = "Jade_Jax", nome = "Jade_JaxE",
+		displayName = "Counter Strike", slot = _E, tipo = "circular",
+		danger = 2, radius = 350,
+		alcancePadrao = 0, raioProprio = true,
+	},
+	["jade_garene"] = {
+		charName = "Jade_Garen", nome = "Jade_GarenE",
+		displayName = "Judgment [giratorio]", slot = _E, tipo = "circular",
+		danger = 3, radius = 325,
+		alcancePadrao = 0, raioProprio = true,
+		auraDeLuta = true,
 	},
 	["jade_drmundow"] = {
 		charName = "Jade_DrMundo", nome = "Jade_DrMundoW",
@@ -2777,6 +2845,10 @@ local ZonasDeRastro = {
 		nome = "GragasERastro", displayName = "Body Slam", slot = _E,
 		raio = 170, extra = 250, duraDoVoo = true, colisao = true, danger = 3, cc = true,
 	},
+	["Jade_Gragas"] = {
+		nome = "Jade_GragasERastro", displayName = "Body Slam", slot = _E,
+		raio = 170, extra = 250, duraDoVoo = true, colisao = true, danger = 3, cc = true,
+	},
 }
 local ZonasDePouso = {
 	["Gnar"] = {
@@ -2950,6 +3022,7 @@ function DEvade:BuffsDe(unit)
 end
 local BarrisQueFermentam = {
 	["GragasQ"] = { charName = "Gragas", buff = "gragasq" },
+	["Jade_GragasQ"] = { charName = "Jade_Gragas", buff = "jade_gragasq_boom" },
 }
 local FeixesSemCampeao = {
 	["HeimerdingerTurretEnergyBlast"] = {
@@ -3696,6 +3769,7 @@ function DEvade:AtualizarZonasPorBuff()
 							collision = false, windwall = false, porTick = true,
 							ring = info.ring, radius2 = info.radius2,
 							auraDeLuta = info.auraDeLuta,
+							poca = info.poca,
 						}
 						local tFig = self._custo and os.clock() or nil
 						local p1, p2 = self:GetPaths(sP, eP, data, info.nome)
