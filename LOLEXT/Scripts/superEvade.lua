@@ -1,4 +1,4 @@
-local superEvadeVersion = "0.5.1"
+local superEvadeVersion = "0.5.2"
 local function MaisNova(a, b)
 	local pa, pb = {}, {}
 	for n in tostring(a):gmatch("%d+") do pa[#pa + 1] = tonumber(n) end
@@ -185,6 +185,14 @@ local SpellDatabase = {
 		["Jade_EzrealQ"] = { displayName = "Mystic Shot", missileName = "Jade_EzrealQ", slot = _Q, type = "linear", speed = 2000, velocidadeFixa = true, range = 1150, delay = 0.25, radius = 60, danger = 1, cc = false, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 		["Jade_EzrealW"] = { displayName = "Essence Flux", missileName = "Jade_EzrealW", slot = _W, type = "linear", speed = 1200, range = 1050, delay = 0.25, radius = 100, danger = 1, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 		["Jade_EzrealR"] = { displayName = "Trueshot Barrage", missileName = "Jade_EzrealR", slot = _R, type = "linear", speed = 2000, range = 25000, delay = 1, radius = 160, danger = 4, cc = false, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+	},
+	["Jade_Lulu"] = {
+		["Jade_LuluQ"] = { displayName = "Glitterlance", missileName = "Jade_LuluQMissile", slot = _Q, type = "linear", speed = 1400, range = 925, delay = 0.25, radius = 80, danger = 2, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
+		["Jade_LuluQMissileTwo"] = { displayName = "Glitterlance [raio do Pix]", missileName = "Jade_LuluQMissileTwo", slot = _Q, type = "linear", speed = 1400, range = 925, delay = 0, radius = 60, seguirMissil = true, seguirReto = true, danger = 2, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = false},
+	},
+	["Jade_Leona"] = {
+		["Jade_LeonaSolarFlare"] = { displayName = "Solar Flare", slot = _R, type = "circular", speed = MathHuge, range = 1200, delay = 0.85, radius = 315, danger = 5, cc = true, collision = false, windwall = false, hitbox = false, fow = false, exception = false, extend = false},
+		["Jade_LeonaZenithBlade"] = { displayName = "Zenith Blade", missileName = "Jade_LeonaZenithBladeMissile", slot = _E, type = "linear", speed = 1750, velocidadeFixa = true, range = 925, delay = 0.25, radius = 80, danger = 3, cc = true, collision = false, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
 	},
 	["Jade_LeeSin"] = {
 		["Jade_LeeSinQOne"] = { displayName = "Sonic Wave", missileName = "Jade_LeeSinQOne", slot = _Q, type = "linear", speed = 1800, range = 1100, delay = 0.25, radius = 60, danger = 2, cc = false, collision = true, windwall = true, hitbox = true, fow = true, exception = false, extend = true},
@@ -8565,15 +8573,59 @@ function DEvade:Tick()
 								end
 							end
 							local e2 = self._indiceSegue[mn]
-							if e2 then
-								self:LogUmaVez("segue:" .. mn, string.format(
-									"SEGUIDOR: %s | zona de %d em cima do projetil, refeita a cada quadro",
-									mn, MathFloor(e2.radius or 0)))
-							end
 							if e2 and mis.pos then
 								local pos2 = self:To2D(mis.pos)
 								if self:PosicaoValida(pos2) then
 									local q2 = self.JEMenu.Core.CQ:Value()
+									local reto = false
+									if e2.seguirReto then
+										self._segueOrigem = self._segueOrigem or {}
+										local agora2 = GameTimer()
+										local ini = self._segueOrigem[mn]
+										if ini and (agora2 - (ini.t or 0)) > 0.4 then ini = nil end
+										if not ini then ini = { p = pos2, t = agora2 } end
+										ini.t = agora2
+										self._segueOrigem[mn] = ini
+										local percorrido = self:Distance(ini.p, pos2)
+										local alcance2 = e2.range or 0
+										if percorrido > 1 and alcance2 > percorrido then
+											local fim2 = Point2D(ini.p):Extended(pos2, alcance2)
+											local d3 = {
+												type = "linear", radius = e2.radius,
+												speed = e2.speed or MathHuge,
+												range = self:Distance(pos2, fim2),
+												delay = 0, danger = e2.danger, cc = e2.cc,
+												displayName = e2.displayName, slot = e2.slot,
+												collision = false, windwall = false,
+												porTick = true, silencioso = true,
+											}
+											local r3, r4 = self:GetPaths(pos2, fim2, d3, mn)
+											if r3 then
+												self:SpellExistsThenRemove(mn)
+												self:AddSpell(r3, r4, pos2, fim2, d3, d3.speed,
+													d3.range, 0, e2.radius, mn)
+												reto = true
+												self:LogUmaVez("seguereto:" .. mn, string.format(
+													"SEGUIDOR RETO: %s | corredor de %d de largura por %d a frente do projetil, a %d por segundo",
+													mn, MathFloor(e2.radius or 0), MathFloor(d3.range),
+													MathFloor(d3.speed)))
+											else
+												self:LogUmaVez("seguesemcaminho:" .. mn, string.format(
+													"SEGUIDOR RETO SEM FIGURA: %s | GetPaths nao devolveu forma para um corredor de %d por %d -- caiu no circulo",
+													mn, MathFloor(e2.radius or 0), MathFloor(d3.range)))
+											end
+										end
+									end
+									if not reto then
+									if e2.seguirReto then
+										self:LogComIntervalo("seguecircfallback:" .. mn, 5, string.format(
+											"SEGUIDOR NO CIRCULO: %s pede corredor e saiu circulo -- e o primeiro quadro, em que o projetil ainda nao andou o bastante para ter direcao",
+											mn))
+									else
+										self:LogUmaVez("seguecirc:" .. mn, string.format(
+											"SEGUIDOR: %s | circulo de %d em cima do projetil, refeito a cada quadro",
+											mn, MathFloor(e2.radius or 0)))
+									end
 									self:SpellExistsThenRemove(mn)
 									local d2 = {
 										type = "circular", radius = e2.radius, speed = MathHuge,
@@ -8585,6 +8637,7 @@ function DEvade:Tick()
 										self:CircleToPolygon(pos2, e2.radius + self.BoundingRadius, q2),
 										self:CircleToPolygon(pos2, e2.radius, q2),
 										pos2, pos2, d2, MathHuge, 0, 0.25, e2.radius, mn)
+									end
 								end
 							end
 						end
@@ -8704,8 +8757,16 @@ function DEvade:Tick()
 				TableSort(ints, function(a, b) return
 					self:DistanceSquared(self.MyHeroPos, a) <
 					self:DistanceSquared(self.MyHeroPos, b) end)
-				local movePos = self:PrependVector(self.MyHeroPos,
-					ints[1], self.BoundingRadius / 2)
+				local ate = self:Distance(self.MyHeroPos, ints[1])
+				local recuo = self.BoundingRadius / 2
+				local movePos = (ate > recuo)
+					and self:PrependVector(self.MyHeroPos, ints[1], ate - recuo)
+					or Point2D(self.MyHeroPos)
+				if self.JEMenu.Debug.TrapDiscovery and self.JEMenu.Debug.TrapDiscovery:Value() then
+					self:LogComIntervalo("corta:" .. tostring(self.DodgeableSpells[1] and self.DodgeableSpells[1].name), 3,
+						string.format("PATH CUT: caminho pedido cruza uma zona a %d de mim -- parando %d antes da borda, sem sair do caminho",
+							MathFloor(ate), MathFloor(MathMin(recuo, ate))))
+				end
 				self:MoveToPos(movePos)
 			end
 		end
